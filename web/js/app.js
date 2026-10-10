@@ -4,7 +4,7 @@ import "../vendor/material-web/material-web.esm.js"; // Official Material 3 web 
 import { loadSettings, saveSettings } from "./settings.js";
 import { Transport } from "./transport.js";
 import * as haptics from "./haptics.js";
-import { applyTheme, THEMES } from "./theme.js";
+import { applyColors, DEFAULT_PRIMARY, DEFAULT_SECONDARY } from "./theme.js";
 import { autoFullscreen, isFullscreen, toggleFullscreen } from "./screen.js";
 import { Stage } from "./controls.js";
 import { defaultLayout, sanitizeLayout, listLayouts, LAYOUT_VERSION, PRESET_TITLES } from "./layout.js";
@@ -14,7 +14,7 @@ const $ = (id) => document.getElementById(id);
 
 const settings = loadSettings();
 haptics.configure(settings);
-applyTheme(settings.theme, settings.accent);
+applyColors(settings.colorPrimary, settings.colorSecondary);
 
 const transport = new Transport();
 const stage = new Stage($("stage"), {
@@ -228,32 +228,33 @@ if (presetSelect) {
   });
 }
 
-/* themes */
-const themeList = $("theme-list");
-function renderThemes() {
-  themeList.innerHTML = "";
-  for (const [id, label] of THEMES) {
-    const btn = document.createElement("button");
-    btn.className = "theme-chip" + (settings.theme === id ? " active" : "");
-    btn.textContent = label;
-    btn.addEventListener("click", () => {
-      settings.theme = id;
-      saveSettings(settings);
-      applyTheme(settings.theme, settings.accent);
-      renderThemes();
+/* theme colors (Primary & Secondary) */
+const colorPrimaryInput = $("color-primary-input");
+const colorSecondaryInput = $("color-secondary-input");
+const btnResetColors = $("btn-reset-colors");
+
+if (colorPrimaryInput && colorSecondaryInput) {
+  colorPrimaryInput.value = settings.colorPrimary || DEFAULT_PRIMARY;
+  colorSecondaryInput.value = settings.colorSecondary || DEFAULT_SECONDARY;
+
+  const updateColors = () => {
+    settings.colorPrimary = colorPrimaryInput.value;
+    settings.colorSecondary = colorSecondaryInput.value;
+    saveSettings(settings);
+    applyColors(settings.colorPrimary, settings.colorSecondary);
+  };
+
+  colorPrimaryInput.addEventListener("input", updateColors);
+  colorSecondaryInput.addEventListener("input", updateColors);
+
+  if (btnResetColors) {
+    btnResetColors.addEventListener("click", () => {
+      colorPrimaryInput.value = DEFAULT_PRIMARY;
+      colorSecondaryInput.value = DEFAULT_SECONDARY;
+      updateColors();
     });
-    themeList.appendChild(btn);
   }
 }
-renderThemes();
-
-const accentInput = $("accent-input");
-accentInput.value = settings.accent || "#39ff88";
-accentInput.addEventListener("input", () => {
-  settings.accent = accentInput.value;
-  saveSettings(settings);
-  applyTheme(settings.theme, settings.accent);
-});
 
 /* options (md-switch / md-slider) */
 function bindSwitch(id, key, after) {
@@ -295,20 +296,6 @@ $("btn-disconnect").addEventListener("click", () => {
   banner("Reconnecting…");
   transport.disconnect();
   setTimeout(() => transport.connect(), 400);
-});
-
-document.querySelectorAll(".copy-btn").forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    const text = btn.dataset.copy;
-    if (text) {
-      try {
-        await navigator.clipboard.writeText(text);
-        banner("Copied install command to clipboard!");
-      } catch {
-        banner("Failed to copy");
-      }
-    }
-  });
 });
 
 /* ---------------- battery (best effort) ---------------- */

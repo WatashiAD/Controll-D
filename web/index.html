@@ -66,12 +66,18 @@
     <div slot="content" class="settings-grid">
       <div class="settings-col">
         <section>
-          <h3>Theme</h3>
-          <div id="theme-list" class="theme-list"></div>
+          <h3>Theme Colors</h3>
           <label class="field row">
-            <span>Accent color</span>
-            <input type="color" id="accent-input" value="#39ff88">
+            <span>Primary (Buttons)</span>
+            <input type="color" id="color-primary-input" value="#655095">
           </label>
+          <label class="field row">
+            <span>Secondary (Labels & Knobs)</span>
+            <input type="color" id="color-secondary-input" value="#d0bcff">
+          </label>
+          <div class="field row" style="justify-content: flex-end; margin-top: 4px;">
+            <md-text-button id="btn-reset-colors">Reset</md-text-button>
+          </div>
         </section>
 
         <section>
@@ -126,28 +132,6 @@
           <div class="conn-info">
             <span id="conn-host">—</span>
             <md-outlined-button id="btn-disconnect">Reconnect</md-outlined-button>
-          </div>
-        </section>
-
-        <section>
-          <h3>Install on PC</h3>
-          <div class="field">
-            <span>Linux & macOS (1-liner):</span>
-            <div class="code-box">
-              <code>curl -fsSL https://raw.githubusercontent.com/WatashiAD/Cotrll-D/main/install.sh | bash</code>
-              <button type="button" class="copy-btn" data-copy="curl -fsSL https://raw.githubusercontent.com/WatashiAD/Cotrll-D/main/install.sh | bash" title="Copy">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              </button>
-            </div>
-          </div>
-          <div class="field" style="margin-top: 8px;">
-            <span>Windows PowerShell (1-liner):</span>
-            <div class="code-box">
-              <code>irm https://raw.githubusercontent.com/WatashiAD/Cotrll-D/main/install.ps1 | iex</code>
-              <button type="button" class="copy-btn" data-copy="irm https://raw.githubusercontent.com/WatashiAD/Cotrll-D/main/install.ps1 | iex" title="Copy">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              </button>
-            </div>
           </div>
         </section>
       </div>

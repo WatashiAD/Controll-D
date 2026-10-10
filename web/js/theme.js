@@ -1,29 +1,22 @@
-/* Theme application: preset + optional user accent override. */
+/* Theme colors: Primary (buttons/face) and Secondary (labels/knobs/accent). */
 
-export const THEMES = [
-  ["expressive", "M3 Expressive"],
-  ["gus", "Gus"],
-  ["midnight", "Midnight"],
-  ["retro", "Retro"],
-  ["light", "Light"],
-];
+export const DEFAULT_PRIMARY = "#655095";
+export const DEFAULT_SECONDARY = "#d0bcff";
 
-export function applyTheme(theme, accent) {
-  let name = theme === "lavender" ? "expressive" : theme;
-  name = THEMES.some(([id]) => id === name) ? name : "expressive";
-  document.documentElement.dataset.ctheme = name;
-  if (name === "light") document.documentElement.removeAttribute("data-theme");
-  else document.documentElement.setAttribute("data-theme", "dark");
-  if (accent) {
-    document.documentElement.style.setProperty("--accent-user", accent);
-    document.documentElement.setAttribute("data-accent", "");
-  } else {
-    document.documentElement.style.removeProperty("--accent-user");
-    document.documentElement.removeAttribute("data-accent");
-  }
+export function applyColors(primary, secondary) {
+  const p = primary || DEFAULT_PRIMARY;
+  const s = secondary || DEFAULT_SECONDARY;
+  const root = document.documentElement;
+
+  root.dataset.ctheme = "expressive";
+  root.setAttribute("data-theme", "dark");
+
+  root.style.setProperty("--ctrl-face", p);
+  root.style.setProperty("--accent", s);
+  root.style.setProperty("--ctrl-text", s);
+  root.style.setProperty("--knob-bg", s);
+  root.style.setProperty("--md-sys-color-primary", s);
+
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) {
-    const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
-    if (bg) meta.content = bg;
-  }
+  if (meta) meta.content = "#383838";
 }

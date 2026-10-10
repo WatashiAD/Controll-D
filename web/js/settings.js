@@ -4,8 +4,8 @@ const SETTINGS_KEY = "cotrll.v1.settings";
 const LAYOUTS_KEY = "cotrll.v1.layouts";
 
 export const DEFAULT_SETTINGS = {
-  theme: "expressive",
-  accent: "",            // empty = theme default
+  colorPrimary: "#655095",
+  colorSecondary: "#d0bcff",
   haptics: true,
   hapticsStrength: 70,
   rumble: true,
@@ -37,9 +37,12 @@ function writeJSON(key, value) {
 export function loadSettings() {
   const stored = readJSON(SETTINGS_KEY, {});
   const res = { ...DEFAULT_SETTINGS, ...(stored && typeof stored === "object" ? stored : {}) };
-  // Migrate existing devices to expressive theme & layout if they have older version
+  if (!res.colorPrimary) res.colorPrimary = DEFAULT_SETTINGS.colorPrimary;
+  if (!res.colorSecondary) res.colorSecondary = DEFAULT_SETTINGS.colorSecondary;
+  // Migrate existing devices to expressive layout if they have older version
   if (!stored || !stored._v || stored._v < 4) {
-    res.theme = "expressive";
+    res.colorPrimary = DEFAULT_SETTINGS.colorPrimary;
+    res.colorSecondary = DEFAULT_SETTINGS.colorSecondary;
     res.layoutName = "expressive";
     res._v = 4;
     saveSettings(res);

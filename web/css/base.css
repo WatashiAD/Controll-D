@@ -85,6 +85,18 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 .field.row input[type="range"] { flex: 1.4; }
 .field.row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
+.field.row input[type="color"] {
+  width: 44px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid rgba(128, 138, 170, 0.35);
+  border-radius: 8px;
+  background: var(--bg2);
+  cursor: pointer;
+  flex: none;
+}
+.field.row input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.field.row input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
 .field.row output { min-width: 42px; text-align: right; font-size: 13px; color: var(--muted); }
 .field.row md-slider { flex: 1.4; min-width: 0; }
 .field.row md-switch { flex: none; }
@@ -195,33 +207,6 @@ md-dialog h3 {
   color: var(--muted);
 }
 
-.theme-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.theme-chip {
-  padding: 10px 6px;
-  min-height: 44px;
-  border-radius: 12px;
-  border: 1px solid rgba(128, 138, 170, 0.35);
-  font-size: 12px;
-  letter-spacing: 0.8px;
-  font-weight: 600;
-  background: var(--bg2);
-  color: var(--text);
-  transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
-}
-
-.theme-chip.active {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: rgba(208, 188, 255, 0.12);
-  box-shadow: var(--glow);
-}
-
 .conn-info {
   display: flex;
   align-items: center;
@@ -265,40 +250,4 @@ md-dialog h3 {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
   pointer-events: auto;
-}
-
-/* ---------------- code snippet box & copy button ---------------- */
-
-.code-box {
-  display: flex;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  padding: 6px 10px;
-  gap: 8px;
-}
-
-.code-box code {
-  flex: 1;
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  font-size: 11px;
-  white-space: nowrap;
-  overflow-x: auto;
-  color: var(--accent);
-}
-
-.copy-btn {
-  display: grid;
-  place-items: center;
-  padding: 4px;
-  border-radius: 6px;
-  color: var(--muted);
-  cursor: pointer;
-  transition: color 120ms ease, background 120ms ease;
-}
-
-.copy-btn:hover {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.12);
 }
