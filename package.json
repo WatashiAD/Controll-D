@@ -1,6 +1,7 @@
 {
   "name": "cotrll-d",
   "version": "1.0.0",
+  "license": "MIT",
   "description": "Turn your phone into a fully customizable wireless PC game controller.",
   "main": "server/main.mjs",
   "bin": {
