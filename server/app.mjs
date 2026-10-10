@@ -11,6 +11,7 @@ import { WebSocketServer } from "ws";
 import { loadConfig } from "./config.mjs";
 import { GamepadError, VirtualGamepad } from "./gamepad.mjs";
 import { RateLimiter, parseMessage } from "./protocol.mjs";
+import QRCode from "qrcode";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WEB_ROOT = resolve(HERE, "..", "web");
@@ -292,9 +293,19 @@ export async function main() {
 
   const server = createServerFromState(state);
   const lan = await lanIp();
+  const phoneUrl = `http://${lan}:${cfg.port}/`;
+
   console.log("");
-  console.log("  Cotrll-D controller server");
-  console.log(`  Phone URL : http://${lan}:${cfg.port}/`);
+  console.log("  🎮 Cotrll-D — Wireless Virtual Gamepad");
+  console.log("  ───────────────────────────────────────");
+  try {
+    const qr = await QRCode.toString(phoneUrl, { type: "terminal", small: true });
+    console.log("  📱 Scan with your phone to start gaming:\n");
+    console.log(qr.split("\n").map((l) => "    " + l).join("\n"));
+  } catch {
+    /* ignore qr generation failure */
+  }
+  console.log(`  Phone URL : ${phoneUrl}`);
   console.log(`  Local URL : http://127.0.0.1:${cfg.port}/`);
   console.log("");
   if (cfg.host !== "127.0.0.1" && cfg.host !== "localhost") {

@@ -12,5 +12,7 @@ config.json
 .DS_Store
 *.swp
 
-# Markdown files (per user request: no md files in repo)
-*.md
+# Internal developer documentation
+AGENTS.md
+ARCHITECTURE.md
+INIT.md

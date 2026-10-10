@@ -297,6 +297,20 @@ $("btn-disconnect").addEventListener("click", () => {
   setTimeout(() => transport.connect(), 400);
 });
 
+document.querySelectorAll(".copy-btn").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const text = btn.dataset.copy;
+    if (text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        banner("Copied install command to clipboard!");
+      } catch {
+        banner("Failed to copy");
+      }
+    }
+  });
+});
+
 /* ---------------- battery (best effort) ---------------- */
 
 const BOLT_ICON = `<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>`;

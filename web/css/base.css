@@ -266,3 +266,39 @@ md-dialog h3 {
   opacity: 1;
   pointer-events: auto;
 }
+
+/* ---------------- code snippet box & copy button ---------------- */
+
+.code-box {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 6px 10px;
+  gap: 8px;
+}
+
+.code-box code {
+  flex: 1;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow-x: auto;
+  color: var(--accent);
+}
+
+.copy-btn {
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 120ms ease, background 120ms ease;
+}
+
+.copy-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.12);
+}
