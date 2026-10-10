@@ -82,6 +82,7 @@ export function createServerFromState(state) {
       if (url.pathname === "/api/info") {
         sendJson(res, 200, {
           name: "cotrll-d",
+          version: "1.0.0",
           pad: state.pad !== null,
           clients: state.active ? 1 : 0,
         });
@@ -296,8 +297,8 @@ export async function main() {
   const phoneUrl = `http://${lan}:${cfg.port}/`;
 
   console.log("");
-  console.log("  🎮 Cotrll-D — Wireless Virtual Gamepad");
-  console.log("  ───────────────────────────────────────");
+  console.log("  🎮 Cotrll-D v1.0 — Wireless Virtual Gamepad");
+  console.log("  ───────────────────────────────────────────");
   try {
     const qr = await QRCode.toString(phoneUrl, { type: "terminal", small: true });
     console.log("  📱 Scan with your phone to start gaming:\n");

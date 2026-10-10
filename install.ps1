@@ -7,7 +7,7 @@ $InstallDir = "$env:LOCALAPPDATA\Cotrll-D"
 $BinDir = "$env:LOCALAPPDATA\Microsoft\WindowsApps"
 $RepoZip = "https://github.com/WatashiAD/Cotrll-D/archive/refs/heads/main.zip"
 
-Write-Host "🎮 Installing Cotrll-D for Windows..." -ForegroundColor Cyan
+Write-Host "🎮 Installing Cotrll-D v1.0 for Windows..." -ForegroundColor Cyan
 
 # 1. Check Node.js
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {

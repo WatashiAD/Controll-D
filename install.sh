@@ -10,7 +10,7 @@ DESKTOP_DIR="${HOME}/.local/share/applications"
 REPO_URL="https://github.com/WatashiAD/Cotrll-D.git"
 TARBALL_URL="https://github.com/WatashiAD/Cotrll-D/archive/refs/heads/main.tar.gz"
 
-echo "🎮 Installing Cotrll-D..."
+echo "🎮 Installing Cotrll-D v1.0..."
 
 # 1. Check Node.js
 if ! command -v node >/dev/null 2>&1; then

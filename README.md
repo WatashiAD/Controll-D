@@ -1,4 +1,4 @@
-# Cotrll-D 🎮
+# Cotrll-D v1.0 🎮
 
 Turn your smartphone or tablet into a fully customizable, low-latency wireless game controller for your PC.
 
