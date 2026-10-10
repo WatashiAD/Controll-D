@@ -19,6 +19,7 @@ export const BUTTON_STYLES = {
     title: "Xbox",
     cluster: { north: "Y", west: "X", east: "B", south: "A" },
     map: { north: "BTN_WEST", west: "BTN_NORTH", east: "BTN_EAST", south: "BTN_SOUTH" },
+    face: { BTN_SOUTH: "A", BTN_EAST: "B", BTN_NORTH: "X", BTN_WEST: "Y" },
     shoulders: { BTN_TL: "LB", BTN_TR: "RB", BTN_TL2: "LT", BTN_TR2: "RT" },
     center: { BTN_SELECT: "VIEW", BTN_START: "MENU", BTN_MODE: "⌂" },
   },
@@ -27,6 +28,7 @@ export const BUTTON_STYLES = {
     title: "PlayStation",
     cluster: { north: "▲", west: "■", east: "●", south: "✕" },
     map: { north: "BTN_WEST", west: "BTN_NORTH", east: "BTN_EAST", south: "BTN_SOUTH" },
+    face: { BTN_SOUTH: "✕", BTN_EAST: "●", BTN_NORTH: "■", BTN_WEST: "▲" },
     shoulders: { BTN_TL: "L1", BTN_TR: "R1", BTN_TL2: "L2", BTN_TR2: "R2" },
     center: { BTN_SELECT: "SHARE", BTN_START: "OPTIONS", BTN_MODE: "PS" },
   },
@@ -34,7 +36,8 @@ export const BUTTON_STYLES = {
     id: "nintendo",
     title: "Nintendo Switch",
     cluster: { north: "X", west: "Y", east: "A", south: "B" },
-    map: { north: "BTN_WEST", west: "BTN_NORTH", east: "BTN_EAST", south: "BTN_SOUTH" },
+    map: { north: "BTN_NORTH", west: "BTN_WEST", east: "BTN_SOUTH", south: "BTN_EAST" },
+    face: { BTN_SOUTH: "A", BTN_EAST: "B", BTN_NORTH: "X", BTN_WEST: "Y" },
     shoulders: { BTN_TL: "L", BTN_TR: "R", BTN_TL2: "ZL", BTN_TR2: "ZR" },
     center: { BTN_SELECT: "−", BTN_START: "+", BTN_MODE: "⌂" },
   },
@@ -53,14 +56,8 @@ export function applyButtonStyleToLayout(layout, styleName = "xbox") {
         c.label = style.shoulders[code];
       } else if (style.center[code]) {
         c.label = style.center[code];
-      } else if (code === "BTN_SOUTH") {
-        c.label = style.cluster.south;
-      } else if (code === "BTN_EAST") {
-        c.label = style.cluster.east;
-      } else if (code === "BTN_NORTH") {
-        c.label = style.cluster.west;
-      } else if (code === "BTN_WEST") {
-        c.label = style.cluster.north;
+      } else if (style.face && style.face[code]) {
+        c.label = style.face[code];
       }
     }
   }
@@ -77,15 +74,15 @@ export function nintendoLayout(name = "default") {
         map: { x: "ABS_X", y: "ABS_Y" }, mode: "floating", deadzone: 12, invertY: false },
       { id: uid(), type: "dpad", label: "", x: 20, y: 30, size: 22, aspect: 1, opacity: 1,
         map: { x: "ABS_HAT0X", y: "ABS_HAT0Y" }, deadzone: 0, invertY: false },
-      /* Nintendo diamond: X top, A right, B bottom, Y left -> mapped to standard Xbox inputs */
+      /* Nintendo diamond: X top, A right, B bottom, Y left -> sends matching Xbox inputs */
       { id: uid(), type: "button", label: "X", x: 81, y: 36, size: 13, aspect: 1, opacity: 1, shape: "squircle",
-        map: { code: "BTN_WEST" }, behavior: "press" },
-      { id: uid(), type: "button", label: "A", x: 88, y: 48, size: 13, aspect: 1, opacity: 1, shape: "squircle",
-        map: { code: "BTN_EAST" }, behavior: "press" },
-      { id: uid(), type: "button", label: "B", x: 81, y: 60, size: 13, aspect: 1, opacity: 1, shape: "squircle",
-        map: { code: "BTN_SOUTH" }, behavior: "press" },
-      { id: uid(), type: "button", label: "Y", x: 74, y: 48, size: 13, aspect: 1, opacity: 1, shape: "squircle",
         map: { code: "BTN_NORTH" }, behavior: "press" },
+      { id: uid(), type: "button", label: "A", x: 88, y: 48, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+        map: { code: "BTN_SOUTH" }, behavior: "press" },
+      { id: uid(), type: "button", label: "B", x: 81, y: 60, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+        map: { code: "BTN_EAST" }, behavior: "press" },
+      { id: uid(), type: "button", label: "Y", x: 74, y: 48, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+        map: { code: "BTN_WEST" }, behavior: "press" },
       { id: uid(), type: "button", label: "L", x: 16, y: 8, size: 14, aspect: 0.45, opacity: 1, shape: "pill",
         map: { code: "BTN_TL" }, behavior: "press" },
       { id: uid(), type: "button", label: "ZL", x: 30, y: 8, size: 14, aspect: 0.45, opacity: 1, shape: "pill",
