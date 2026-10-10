@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-ctheme="expressive" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#383838">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Cotrll-D</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='6' y='26' width='88' height='50' rx='24' fill='%23c9b6f6'/%3E%3Ccircle cx='32' cy='51' r='8' fill='%23242424'/%3E%3Ccircle cx='68' cy='43' r='6' fill='%23242424'/%3E%3Ccircle cx='68' cy='60' r='6' fill='%23242424'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/themes.css?v=4">
+  <link rel="stylesheet" href="css/base.css?v=4">
+  <link rel="stylesheet" href="css/controller.css?v=4">
+  <script type="importmap">
+    {
+      "imports": {
+        "@material/web/": "./vendor/material-web/",
+        "@material/web/all.js": "./vendor/material-web/material-web.esm.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- Controller -->
+  <div id="app">
+    <header id="hud">
+      <div class="hud-left">
+        <span id="status-dot" class="dot"></span>
+        <span id="status-text">…</span>
+        <span id="rtt-pill" class="pill" hidden>— ms</span>
+        <span id="batt-pill" class="pill" hidden>—%</span>
+      </div>
+      <div class="hud-right">
+        <md-icon-button id="btn-fullscreen" aria-label="Fullscreen">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        </md-icon-button>
+        <md-icon-button id="btn-settings" aria-label="Settings">
+          <svg viewBox="0 0 100 100" width="22" height="22" aria-hidden="true">
+            <path d="M 35.46 14.89 C 40.83 12.67, 36.22 2.00, 50.00 2.00 C 63.78 2.00, 59.17 12.67, 64.54 14.89 C 69.92 17.12, 74.20 6.32, 83.94 16.06 C 93.68 25.80, 82.88 30.08, 85.11 35.46 C 87.33 40.83, 98.00 36.22, 98.00 50.00 C 98.00 63.78, 87.33 59.17, 85.11 64.54 C 82.88 69.92, 93.68 74.20, 83.94 83.94 C 74.20 93.68, 69.92 82.88, 64.54 85.11 C 59.17 87.33, 63.78 98.00, 50.00 98.00 C 36.22 98.00, 40.83 87.33, 35.46 85.11 C 30.08 82.88, 25.80 93.68, 16.06 83.94 C 6.32 74.20, 17.12 69.92, 14.89 64.54 C 12.67 59.17, 2.00 63.78, 2.00 50.00 C 2.00 36.22, 12.67 40.83, 14.89 35.46 C 17.12 30.08, 6.32 25.80, 16.06 16.06 C 25.80 6.32, 30.08 17.12, 35.46 14.89 Z" fill="currentColor"/>
+            <circle cx="50" cy="50" r="18" fill="var(--bg, #242424)"/>
+          </svg>
+        </md-icon-button>
+      </div>
+    </header>
+
+    <div id="stage">
+      <div id="grid" hidden></div>
+    </div>
+
+    <!-- Editor panel: small floating card, drag by the header -->
+    <div id="editor" hidden>
+      <div class="ed-head" id="ed-drag">
+        <span class="ed-grip" title="Drag" aria-hidden="true"></span>
+        <md-outlined-select id="layout-select" aria-label="Layout">
+        </md-outlined-select>
+        <md-text-button id="layout-save" aria-label="Save layout">Save</md-text-button>
+        <md-filled-button id="ed-done">Done</md-filled-button>
+      </div>
+      <div class="ed-row" id="ed-props" hidden></div>
+    </div>
+  </div>
+
+  <!-- Settings dialog (@material/web) -->
+  <md-dialog id="settings-modal">
+    <div slot="headline">Settings</div>
+    <div slot="content" class="settings-grid">
+      <div class="settings-col">
+        <section>
+          <h3>Theme</h3>
+          <div id="theme-list" class="theme-list"></div>
+          <label class="field row">
+            <span>Accent color</span>
+            <input type="color" id="accent-input" value="#39ff88">
+          </label>
+        </section>
+
+        <section>
+          <h3>Vibration</h3>
+          <div class="field row">
+            <span>Touch feedback</span>
+            <md-switch id="opt-haptics" aria-label="Touch feedback"></md-switch>
+          </div>
+          <div class="field row">
+            <span>Strength</span>
+            <md-slider id="opt-haptics-strength" min="0" max="100" step="1" value="70" labeled aria-label="Haptic strength"></md-slider>
+          </div>
+          <div class="field row">
+            <span>Game rumble</span>
+            <md-switch id="opt-rumble" aria-label="Game rumble"></md-switch>
+          </div>
+        </section>
+      </div>
+
+      <div class="settings-col">
+        <section>
+          <h3>Input</h3>
+          <div class="field row">
+            <span>Show latency</span>
+            <md-switch id="opt-show-rtt" aria-label="Show latency"></md-switch>
+          </div>
+          <div class="field row">
+            <span>Global deadzone</span>
+            <md-slider id="opt-deadzone" min="0" max="40" step="1" value="10" labeled aria-label="Global deadzone"></md-slider>
+          </div>
+          <div class="field row">
+            <span>Auto fullscreen on tap</span>
+            <md-switch id="opt-autofs" aria-label="Auto fullscreen on tap"></md-switch>
+          </div>
+        </section>
+
+        <section>
+          <h3>Layout</h3>
+          <div class="field row">
+            <span>Preset</span>
+            <md-outlined-select id="settings-preset-select" aria-label="Layout preset">
+            </md-outlined-select>
+          </div>
+          <div class="conn-info" style="margin-top: 8px;">
+            <span>Customise / move</span>
+            <md-filled-button id="btn-edit-settings">Edit</md-filled-button>
+          </div>
+        </section>
+
+        <section>
+          <h3>Connection</h3>
+          <div class="conn-info">
+            <span id="conn-host">—</span>
+            <md-outlined-button id="btn-disconnect">Reconnect</md-outlined-button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div slot="actions">
+      <md-text-button id="settings-close">Close</md-text-button>
+    </div>
+  </md-dialog>
+
+  <div id="banner" class="m3-snackbar" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/app.js?v=4"></script>
+</body>
+</html>

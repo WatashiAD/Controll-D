@@ -1,0 +1,134 @@
+/* Theme engine: presets define palette, --accent can be overridden per-user. */
+
+:root {
+  --accent-user: null;
+  --font: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --font-display: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --radius: 14px;
+  --hud-h: 44px;
+}
+
+[data-ctheme="gus"] {
+  --bg: #07090f;
+  --bg2: #0c1020;
+  --panel: rgba(16, 20, 36, 0.92);
+  --panel-solid: #10142a;
+  --text: #eef2ff;
+  --muted: #8b93b8;
+  --accent: #39ff88;
+  --accent2: #ff3df2;
+  --danger: #ff4d6a;
+  --ctrl-face: rgba(57, 255, 136, 0.12);
+  --ctrl-edge: rgba(57, 255, 136, 0.55);
+  --ctrl-active: rgba(57, 255, 136, 0.35);
+  --ctrl-text: #eafff2;
+  --glow: 0 0 18px rgba(57, 255, 136, 0.35);
+  --stage-bg:
+    radial-gradient(1200px 600px at 15% 110%, rgba(57, 255, 136, 0.10), transparent 60%),
+    radial-gradient(1000px 500px at 90% -10%, rgba(255, 61, 242, 0.10), transparent 60%),
+    linear-gradient(180deg, #07090f, #0a0d18 60%, #07090f);
+}
+
+[data-ctheme="midnight"] {
+  --bg: #0a0f1a;
+  --bg2: #0e1526;
+  --panel: rgba(14, 21, 38, 0.94);
+  --panel-solid: #0e1526;
+  --text: #e6ecff;
+  --muted: #7f8bb3;
+  --accent: #4da3ff;
+  --accent2: #7c5cff;
+  --danger: #ff5470;
+  --ctrl-face: rgba(77, 163, 255, 0.12);
+  --ctrl-edge: rgba(77, 163, 255, 0.55);
+  --ctrl-active: rgba(77, 163, 255, 0.35);
+  --ctrl-text: #eaf3ff;
+  --glow: 0 0 16px rgba(77, 163, 255, 0.3);
+  --stage-bg:
+    radial-gradient(1000px 700px at 50% 120%, rgba(77, 163, 255, 0.10), transparent 65%),
+    linear-gradient(180deg, #0a0f1a, #0c1322);
+}
+
+[data-ctheme="retro"] {
+  --bg: #0d0b06;
+  --bg2: #14110a;
+  --panel: rgba(24, 20, 10, 0.94);
+  --panel-solid: #18140a;
+  --text: #ffe9b8;
+  --muted: #a8946a;
+  --accent: #ffb300;
+  --accent2: #ff5e00;
+  --danger: #ff4d4d;
+  --ctrl-face: rgba(255, 179, 0, 0.12);
+  --ctrl-edge: rgba(255, 179, 0, 0.55);
+  --ctrl-active: rgba(255, 179, 0, 0.38);
+  --ctrl-text: #fff3d6;
+  --glow: 0 0 14px rgba(255, 179, 0, 0.35);
+  --stage-bg:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 3px),
+    radial-gradient(900px 600px at 50% 110%, rgba(255, 94, 0, 0.10), transparent 60%),
+    #0d0b06;
+  --font-display: "Courier New", ui-monospace, monospace;
+}
+
+[data-ctheme="light"] {
+  --bg: #f2f4f8;
+  --bg2: #e8ecf4;
+  --panel: rgba(255, 255, 255, 0.95);
+  --panel-solid: #ffffff;
+  --text: #141a2a;
+  --muted: #5b6478;
+  --accent: #0a84ff;
+  --accent2: #af52de;
+  --danger: #d70035;
+  --ctrl-face: rgba(10, 132, 255, 0.10);
+  --ctrl-edge: rgba(10, 132, 255, 0.55);
+  --ctrl-active: rgba(10, 132, 255, 0.30);
+  --ctrl-text: #0b3a75;
+  --glow: 0 0 12px rgba(10, 132, 255, 0.25);
+  --stage-bg:
+    radial-gradient(900px 600px at 20% 110%, rgba(10, 132, 255, 0.08), transparent 60%),
+    linear-gradient(180deg, #f2f4f8, #e8ecf4);
+}
+
+[data-ctheme="lavender"],
+[data-ctheme="expressive"] {
+  --bg: #383838;
+  --bg2: #2e2e2e;
+  --panel: rgba(45, 45, 45, 0.96);
+  --panel-solid: #333333;
+  --text: #e6e0e9;
+  --muted: #938f99;
+  --accent: #d0bcff;
+  --accent2: #b39ddb;
+  --danger: #f2b8b5;
+  --ctrl-face: #655095;
+  --ctrl-edge: transparent;
+  --ctrl-active: #7c65bc;
+  --ctrl-text: #d0bcff;
+  --glow: 0 0 16px rgba(208, 188, 255, 0.4);
+  --knob-bg: #d0bcff;
+  --stage-bg: #383838;
+
+  /* Material 3 System Tokens */
+  --md-sys-color-primary: #d0bcff;
+  --md-sys-color-on-primary: #381e72;
+  --md-sys-color-primary-container: #6550a0;
+  --md-sys-color-on-primary-container: #e8ddff;
+  --md-sys-color-surface: #242424;
+  --md-sys-color-on-surface: #e6e0e9;
+  --md-sys-color-surface-container: #2b2930;
+  --md-sys-color-surface-container-high: #36343b;
+  --md-sys-color-surface-container-highest: #49454f;
+  --md-sys-color-outline: #938f99;
+  --md-sys-color-outline-variant: #49454f;
+  --md-sys-color-secondary: #ccc2dc;
+  --md-sys-color-on-secondary: #332d41;
+  --md-sys-color-secondary-container: #4a4458;
+  --md-sys-color-on-secondary-container: #e8def8;
+}
+
+/* User accent override: applied via inline style --accent-* on :root. */
+:root[data-accent] {
+  --accent: var(--accent-user);
+}

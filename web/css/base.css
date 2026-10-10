@@ -1,0 +1,268 @@
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  color: inherit;
+  background: none;
+}
+
+input, select {
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg2);
+  border: 1px solid rgba(128, 138, 170, 0.35);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 15px;
+  outline: none;
+}
+
+input:focus, select:focus {
+  border-color: var(--accent);
+}
+
+input[type="range"] { accent-color: var(--accent); }
+
+button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+[hidden] { display: none !important; }
+
+/* ---------------- shared form rows (settings) ---------------- */
+
+.field {
+  display: block;
+  text-align: left;
+  margin-bottom: 14px;
+}
+
+.field > span {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  letter-spacing: 0.4px;
+}
+
+.field.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.field.row > span {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.field.row input[type="range"] { flex: 1.4; }
+.field.row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
+.field.row output { min-width: 42px; text-align: right; font-size: 13px; color: var(--muted); }
+.field.row md-slider { flex: 1.4; min-width: 0; }
+.field.row md-switch { flex: none; }
+
+/* ---------------- HUD ---------------- */
+
+#hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--hud-h) + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 12px;
+  padding-right: 8px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent);
+  z-index: 30;
+  pointer-events: none;
+  font-size: 12px;
+}
+
+.hud-left, .hud-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.dot.ok { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.dot.warn { background: #ffb300; }
+.dot.err { background: var(--danger); }
+
+.pill {
+  background: rgba(128, 138, 170, 0.18);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.pill svg { vertical-align: -1px; }
+
+/* ---------------- settings dialog content (Material 3 Web md-dialog) ---------------- */
+
+md-dialog {
+  --md-dialog-container-color: var(--panel-solid, #26242c);
+  --md-dialog-container-shape: 28px;
+  --md-dialog-container-max-width: 680px;
+  --md-dialog-container-width: calc(100vw - 32px);
+  --md-sys-color-surface-container-high: var(--panel-solid, #26242c);
+  --md-sys-color-on-surface: var(--text, #e6e0e9);
+  --md-sys-color-primary: var(--accent, #d0bcff);
+}
+
+[slot="headline"] {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.15px;
+  color: var(--text);
+}
+
+[slot="content"] {
+  max-height: calc(85vh - 130px);
+  overflow-y: auto;
+}
+
+md-outlined-select {
+  width: 100%;
+  --md-outlined-select-text-field-container-shape: 12px;
+  --md-sys-color-surface: var(--bg2, #2b2930);
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+@media (min-width: 540px) {
+  .settings-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+}
+
+.settings-col section {
+  padding: 10px 0;
+  border-top: 1px solid rgba(128, 138, 170, 0.18);
+}
+
+.settings-col section:first-of-type { border-top: none; }
+
+md-dialog h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+}
+
+.theme-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.theme-chip {
+  padding: 10px 6px;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(128, 138, 170, 0.35);
+  font-size: 12px;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+  background: var(--bg2);
+  color: var(--text);
+  transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
+}
+
+.theme-chip.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(208, 188, 255, 0.12);
+  box-shadow: var(--glow);
+}
+
+.conn-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---------------- HUD icon button (md-icon-button host) ---------------- */
+
+.hud-right md-icon-button {
+  color: var(--text);
+  --md-icon-button-icon-color: var(--text);
+}
+
+/* ---------------- M3 Expressive Snackbar / Toast ---------------- */
+
+.m3-snackbar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--panel-solid, #36343b);
+  color: var(--text, #e6e0e9);
+  padding: 14px 22px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45), 0 0 1px rgba(255, 255, 255, 0.1);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 260ms cubic-bezier(0.1, 0.9, 0.2, 1), opacity 200ms ease;
+  max-width: calc(100vw - 32px);
+  text-align: center;
+}
+
+.m3-snackbar.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
