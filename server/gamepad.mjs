@@ -139,7 +139,13 @@ export class VirtualGamepad {
       this.ioctlVal(UI_SET_EVBIT, EV_KEY);
       this.ioctlVal(UI_SET_EVBIT, EV_ABS);
       this.ioctlVal(UI_SET_EVBIT, EV_FF);
-      for (const code of Object.values(BUTTONS)) this.ioctlVal(UI_SET_KEYBIT, code);
+      /* Xbox 360 controller uses ABS_Z/ABS_RZ for triggers and omits BTN_TL2/BTN_TR2 keybits
+       * so BTN_SELECT maps to joydev button 6 (SDL 'back'), matching SDL_GameControllerDB. */
+      for (const [name, code] of Object.entries(BUTTONS)) {
+        if (name !== "BTN_TL2" && name !== "BTN_TR2") {
+          this.ioctlVal(UI_SET_KEYBIT, code);
+        }
+      }
       for (const [code] of Object.values(AXES)) this.ioctlVal(UI_SET_ABSBIT, code);
       this.ioctlVal(UI_SET_FFBIT, FF_RUMBLE);
       this.ioctlVal(UI_SET_FFBIT, FF_GAIN);
@@ -199,18 +205,19 @@ export class VirtualGamepad {
   }
 
   setButton(codeName, value) {
+    /* Digital triggers map directly to Xbox 360 analog trigger axes (ABS_Z / ABS_RZ) */
+    if (codeName === "BTN_TL2") {
+      return this.setAxis("ABS_Z", value ? 1.0 : 0.0);
+    }
+    if (codeName === "BTN_TR2") {
+      return this.setAxis("ABS_RZ", value ? 1.0 : 0.0);
+    }
     const ecode = BUTTONS[codeName];
     if (ecode === undefined) return false;
     const v = value ? 1 : 0;
     if (this.btnState.get(ecode) === v) return true;
     this.btnState.set(ecode, v);
     this.emit(EV_KEY, ecode, v);
-    /* Mirror digital triggers to analog trigger axes for SDL / Xbox 360 compatibility */
-    if (codeName === "BTN_TL2") {
-      this.setAxis("ABS_Z", v ? 1.0 : 0.0);
-    } else if (codeName === "BTN_TR2") {
-      this.setAxis("ABS_RZ", v ? 1.0 : 0.0);
-    }
     return true;
   }
 
