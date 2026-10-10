@@ -4,6 +4,7 @@ const SETTINGS_KEY = "cotrll.v1.settings";
 const LAYOUTS_KEY = "cotrll.v1.layouts";
 
 export const DEFAULT_SETTINGS = {
+  buttonStyle: "xbox",   // "xbox" | "playstation" | "nintendo"
   colorPrimary: "#655095",
   colorSecondary: "#d0bcff",
   haptics: true,
@@ -37,6 +38,7 @@ function writeJSON(key, value) {
 export function loadSettings() {
   const stored = readJSON(SETTINGS_KEY, {});
   const res = { ...DEFAULT_SETTINGS, ...(stored && typeof stored === "object" ? stored : {}) };
+  if (!res.buttonStyle) res.buttonStyle = DEFAULT_SETTINGS.buttonStyle;
   if (!res.colorPrimary) res.colorPrimary = DEFAULT_SETTINGS.colorPrimary;
   if (!res.colorSecondary) res.colorSecondary = DEFAULT_SETTINGS.colorSecondary;
   // Migrate existing devices to expressive layout if they have older version

@@ -7,7 +7,7 @@ import * as haptics from "./haptics.js";
 import { applyColors, DEFAULT_PRIMARY, DEFAULT_SECONDARY } from "./theme.js";
 import { autoFullscreen, isFullscreen, toggleFullscreen } from "./screen.js";
 import { Stage } from "./controls.js";
-import { defaultLayout, sanitizeLayout, listLayouts, LAYOUT_VERSION, PRESET_TITLES } from "./layout.js";
+import { defaultLayout, sanitizeLayout, listLayouts, LAYOUT_VERSION, PRESET_TITLES, applyButtonStyleToLayout, BUTTON_STYLES } from "./layout.js";
 import { Editor } from "./editor.js";
 
 const $ = (id) => document.getElementById(id);
@@ -57,6 +57,7 @@ function loadCurrentLayout() {
   const fresh = stored && stored.version === LAYOUT_VERSION ? stored : null;
   const layout = sanitizeLayout(fresh) || defaultLayout();
   app.layoutName = fresh ? layout.name : "expressive";
+  applyButtonStyleToLayout(layout, settings.buttonStyle || "xbox");
   stage.load(layout);
 }
 loadCurrentLayout();
@@ -219,12 +220,38 @@ if (presetSelect) {
     const layouts = listLayouts();
     const l = sanitizeLayout(layouts[chosen]);
     if (l) {
+      if (chosen === "xbox" || chosen === "playstation" || chosen === "nintendo") {
+        settings.buttonStyle = chosen;
+        if (buttonStyleSelect) buttonStyleSelect.value = chosen;
+        saveSettings(settings);
+      }
+      applyButtonStyleToLayout(l, settings.buttonStyle || "xbox");
       stage.load(l);
       app.storeLayoutName(chosen);
       app.layoutName = chosen;
       editor.refreshLayoutSelect(chosen);
       banner(`Preset: ${PRESET_TITLES[chosen] || chosen}`);
     }
+  });
+}
+
+/* controller button style (Xbox / PlayStation / Nintendo Switch) */
+const buttonStyleSelect = $("settings-button-style");
+function applyActiveButtonStyle(styleName = settings.buttonStyle) {
+  const current = stage.toJSON(app.layoutName);
+  applyButtonStyleToLayout(current, styleName);
+  stage.load(current);
+}
+
+if (buttonStyleSelect) {
+  buttonStyleSelect.value = settings.buttonStyle || "xbox";
+  buttonStyleSelect.addEventListener("change", () => {
+    const chosen = buttonStyleSelect.value;
+    settings.buttonStyle = chosen;
+    saveSettings(settings);
+    applyActiveButtonStyle(chosen);
+    const title = (BUTTON_STYLES[chosen] && BUTTON_STYLES[chosen].title) || chosen;
+    banner(`Buttons: ${title}`);
   });
 }
 

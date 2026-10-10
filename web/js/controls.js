@@ -372,8 +372,8 @@ class ClusterControl extends BaseControl {
 
     this.buttons = {};
     const subDefs = [
-      { dir: "north", defaultCode: "BTN_NORTH", defaultLabel: "Y" },
-      { dir: "west",  defaultCode: "BTN_WEST",  defaultLabel: "X" },
+      { dir: "north", defaultCode: "BTN_WEST",  defaultLabel: "Y" },
+      { dir: "west",  defaultCode: "BTN_NORTH", defaultLabel: "X" },
       { dir: "east",  defaultCode: "BTN_EAST",  defaultLabel: "B" },
       { dir: "south", defaultCode: "BTN_SOUTH", defaultLabel: "A" },
     ];

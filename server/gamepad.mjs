@@ -9,19 +9,19 @@ import koffi from "koffi";
 
 /* Logical button name -> evdev key code */
 export const BUTTONS = {
-  BTN_SOUTH: 0x130, // A / Cross
-  BTN_EAST: 0x131, // B / Circle
-  BTN_NORTH: 0x133, // Y / Triangle
-  BTN_WEST: 0x134, // X / Square
-  BTN_TL: 0x136, // Left bumper
-  BTN_TR: 0x137, // Right bumper
-  BTN_TL2: 0x138,
-  BTN_TR2: 0x139,
-  BTN_SELECT: 0x13a,
-  BTN_START: 0x13b,
-  BTN_MODE: 0x13c,
-  BTN_THUMBL: 0x13d,
-  BTN_THUMBR: 0x13e,
+  BTN_SOUTH: 0x130, // A / Cross (South, SDL b0)
+  BTN_EAST: 0x131, // B / Circle (East, SDL b1)
+  BTN_NORTH: 0x133, // X / Square (West, evdev BTN_X / SDL b2)
+  BTN_WEST: 0x134, // Y / Triangle (North, evdev BTN_Y / SDL b3)
+  BTN_TL: 0x136, // Left bumper (LB / L1 / L)
+  BTN_TR: 0x137, // Right bumper (RB / R1 / R)
+  BTN_TL2: 0x138, // Left trigger (LT / L2 / ZL)
+  BTN_TR2: 0x139, // Right trigger (RT / R2 / ZR)
+  BTN_SELECT: 0x13a, // Back / View / Share / −
+  BTN_START: 0x13b, // Start / Menu / Options / +
+  BTN_MODE: 0x13c, // Guide / Home / PS
+  BTN_THUMBL: 0x13d, // Left stick click (L3)
+  BTN_THUMBR: 0x13e, // Right stick click (R3)
 };
 
 /* Logical axis name -> [evdev abs code, kind]
@@ -205,6 +205,12 @@ export class VirtualGamepad {
     if (this.btnState.get(ecode) === v) return true;
     this.btnState.set(ecode, v);
     this.emit(EV_KEY, ecode, v);
+    /* Mirror digital triggers to analog trigger axes for SDL / Xbox 360 compatibility */
+    if (codeName === "BTN_TL2") {
+      this.setAxis("ABS_Z", v ? 1.0 : 0.0);
+    } else if (codeName === "BTN_TR2") {
+      this.setAxis("ABS_RZ", v ? 1.0 : 0.0);
+    }
     return true;
   }
 

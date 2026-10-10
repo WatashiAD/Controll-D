@@ -13,6 +13,60 @@ export function uid(prefix = "c") {
   return `${prefix}-${Date.now().toString(36)}-${uidCounter}`;
 }
 
+export const BUTTON_STYLES = {
+  xbox: {
+    id: "xbox",
+    title: "Xbox",
+    cluster: { north: "Y", west: "X", east: "B", south: "A" },
+    map: { north: "BTN_WEST", west: "BTN_NORTH", east: "BTN_EAST", south: "BTN_SOUTH" },
+    shoulders: { BTN_TL: "LB", BTN_TR: "RB", BTN_TL2: "LT", BTN_TR2: "RT" },
+    center: { BTN_SELECT: "VIEW", BTN_START: "MENU", BTN_MODE: "⌂" },
+  },
+  playstation: {
+    id: "playstation",
+    title: "PlayStation",
+    cluster: { north: "▲", west: "■", east: "●", south: "✕" },
+    map: { north: "BTN_WEST", west: "BTN_NORTH", east: "BTN_EAST", south: "BTN_SOUTH" },
+    shoulders: { BTN_TL: "L1", BTN_TR: "R1", BTN_TL2: "L2", BTN_TR2: "R2" },
+    center: { BTN_SELECT: "SHARE", BTN_START: "OPTIONS", BTN_MODE: "PS" },
+  },
+  nintendo: {
+    id: "nintendo",
+    title: "Nintendo Switch",
+    cluster: { north: "X", west: "Y", east: "A", south: "B" },
+    map: { north: "BTN_WEST", west: "BTN_NORTH", east: "BTN_EAST", south: "BTN_SOUTH" },
+    shoulders: { BTN_TL: "L", BTN_TR: "R", BTN_TL2: "ZL", BTN_TR2: "ZR" },
+    center: { BTN_SELECT: "−", BTN_START: "+", BTN_MODE: "⌂" },
+  },
+};
+
+export function applyButtonStyleToLayout(layout, styleName = "xbox") {
+  const style = BUTTON_STYLES[styleName] || BUTTON_STYLES.xbox;
+  if (!layout || !layout.controls) return layout;
+  for (const c of layout.controls) {
+    if (c.type === "cluster") {
+      c.labels = { ...style.cluster };
+      c.map = { ...style.map };
+    } else if (c.type === "button" && c.map && c.map.code) {
+      const code = c.map.code;
+      if (style.shoulders[code]) {
+        c.label = style.shoulders[code];
+      } else if (style.center[code]) {
+        c.label = style.center[code];
+      } else if (code === "BTN_SOUTH") {
+        c.label = style.cluster.south;
+      } else if (code === "BTN_EAST") {
+        c.label = style.cluster.east;
+      } else if (code === "BTN_NORTH") {
+        c.label = style.cluster.west;
+      } else if (code === "BTN_WEST") {
+        c.label = style.cluster.north;
+      }
+    }
+  }
+  return layout;
+}
+
 /* Nintendo Switch Pro-style pad: sticks + dpad + plain buttons only. */
 export function nintendoLayout(name = "default") {
   return {
@@ -23,13 +77,13 @@ export function nintendoLayout(name = "default") {
         map: { x: "ABS_X", y: "ABS_Y" }, mode: "floating", deadzone: 12, invertY: false },
       { id: uid(), type: "dpad", label: "", x: 20, y: 30, size: 22, aspect: 1, opacity: 1,
         map: { x: "ABS_HAT0X", y: "ABS_HAT0Y" }, deadzone: 0, invertY: false },
-      /* Nintendo diamond: X top, A right, B bottom, Y left */
+      /* Nintendo diamond: X top, A right, B bottom, Y left -> mapped to standard Xbox inputs */
       { id: uid(), type: "button", label: "X", x: 81, y: 36, size: 13, aspect: 1, opacity: 1, shape: "squircle",
         map: { code: "BTN_WEST" }, behavior: "press" },
       { id: uid(), type: "button", label: "A", x: 88, y: 48, size: 13, aspect: 1, opacity: 1, shape: "squircle",
-        map: { code: "BTN_SOUTH" }, behavior: "press" },
-      { id: uid(), type: "button", label: "B", x: 81, y: 60, size: 13, aspect: 1, opacity: 1, shape: "squircle",
         map: { code: "BTN_EAST" }, behavior: "press" },
+      { id: uid(), type: "button", label: "B", x: 81, y: 60, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+        map: { code: "BTN_SOUTH" }, behavior: "press" },
       { id: uid(), type: "button", label: "Y", x: 74, y: 48, size: 13, aspect: 1, opacity: 1, shape: "squircle",
         map: { code: "BTN_NORTH" }, behavior: "press" },
       { id: uid(), type: "button", label: "L", x: 16, y: 8, size: 14, aspect: 0.45, opacity: 1, shape: "pill",
@@ -68,13 +122,13 @@ export function playstationLayout(name = "playstation") {
         map: { x: "ABS_RX", y: "ABS_RY" }, mode: "fixed", deadzone: 12, invertY: false },
       /* The Shapes diamond: Triangle top, Circle right, Cross bottom, Square left */
       { id: uid(), type: "button", label: "▲", x: 80, y: 22, size: 13, aspect: 1, opacity: 1, shape: "squircle",
-        map: { code: "BTN_NORTH" }, behavior: "press" },
+        map: { code: "BTN_WEST" }, behavior: "press" },
       { id: uid(), type: "button", label: "●", x: 88, y: 34, size: 13, aspect: 1, opacity: 1, shape: "squircle",
         map: { code: "BTN_EAST" }, behavior: "press" },
       { id: uid(), type: "button", label: "✕", x: 80, y: 46, size: 13, aspect: 1, opacity: 1, shape: "squircle",
         map: { code: "BTN_SOUTH" }, behavior: "press" },
       { id: uid(), type: "button", label: "■", x: 72, y: 34, size: 13, aspect: 1, opacity: 1, shape: "squircle",
-        map: { code: "BTN_WEST" }, behavior: "press" },
+        map: { code: "BTN_NORTH" }, behavior: "press" },
       { id: uid(), type: "button", label: "L1", x: 16, y: 8, size: 14, aspect: 0.45, opacity: 1, shape: "pill",
         map: { code: "BTN_TL" }, behavior: "press" },
       { id: uid(), type: "button", label: "L2", x: 30, y: 8, size: 14, aspect: 0.45, opacity: 1, shape: "pill",
@@ -107,13 +161,13 @@ export function xboxLayout(name = "xbox") {
         map: { x: "ABS_HAT0X", y: "ABS_HAT0Y" }, deadzone: 0, invertY: false },
       /* Xbox diamond: Y top, B right, A bottom, X left */
       { id: uid(), type: "button", label: "Y", x: 80, y: 22, size: 13, aspect: 1, opacity: 1, shape: "squircle",
-        map: { code: "BTN_NORTH" }, behavior: "press" },
+        map: { code: "BTN_WEST" }, behavior: "press" },
       { id: uid(), type: "button", label: "B", x: 88, y: 34, size: 13, aspect: 1, opacity: 1, shape: "squircle",
         map: { code: "BTN_EAST" }, behavior: "press" },
       { id: uid(), type: "button", label: "A", x: 80, y: 46, size: 13, aspect: 1, opacity: 1, shape: "squircle",
         map: { code: "BTN_SOUTH" }, behavior: "press" },
       { id: uid(), type: "button", label: "X", x: 72, y: 34, size: 13, aspect: 1, opacity: 1, shape: "squircle",
-        map: { code: "BTN_WEST" }, behavior: "press" },
+        map: { code: "BTN_NORTH" }, behavior: "press" },
       { id: uid(), type: "stick", label: "", x: 67, y: 68, size: 26, aspect: 1, opacity: 1,
         map: { x: "ABS_RX", y: "ABS_RY" }, mode: "fixed", deadzone: 12, invertY: false },
       { id: uid(), type: "button", label: "LB", x: 16, y: 8, size: 14, aspect: 0.45, opacity: 1, shape: "pill",
@@ -174,7 +228,7 @@ export function expressiveLayout(name = "expressive") {
     controls: [
       /* ABXY 4-Button Cluster (Clover) — LEFT side */
       { id: uid(), type: "cluster", label: "", x: 20.8, y: 35.5, size: 23.0, aspect: 1.0, opacity: 1, shape: "clover",
-        map: { north: "BTN_NORTH", west: "BTN_WEST", east: "BTN_EAST", south: "BTN_SOUTH" },
+        map: { north: "BTN_WEST", west: "BTN_NORTH", east: "BTN_EAST", south: "BTN_SOUTH" },
         labels: { north: "Y", west: "X", east: "B", south: "A" } },
 
       /* D-Pad (Clover) — RIGHT side */
