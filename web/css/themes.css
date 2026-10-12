@@ -23,7 +23,7 @@
   --ctrl-edge: transparent;
   --ctrl-active: #7c65bc;
   --ctrl-text: #d0bcff;
-  --glow: 0 0 16px rgba(208, 188, 255, 0.4);
+  --glow: none;
   --knob-bg: #d0bcff;
   --stage-bg: #383838;
 

@@ -107,7 +107,7 @@ class BaseControl {
       fs = clamp(fs * (3.5 / labelKey.length), 7, 14);
     }
     el.style.setProperty("--fs", `${fs}px`);
-    const defaultShape = (this.data.aspect && this.data.aspect < 0.75) ? "pill" : "cookie";
+    const defaultShape = (this.data.aspect && this.data.aspect < 0.75) ? "pill" : (this.data.shape || "squircle");
     el.dataset.shape = this.data.shape || defaultShape;
 
     const iconHtml = SHAPE_ICONS[labelKey] || SHAPE_ICONS[labelKey.toUpperCase()] || SHAPE_ICONS[labelKey.toLowerCase()];
@@ -140,8 +140,6 @@ class BaseControl {
 class ButtonControl extends BaseControl {
   constructor(data, stage) {
     super(data, stage);
-    this.cookieSvg = createShapeSvg(COOKIE_PATH, "face-cookie");
-    this.face.appendChild(this.cookieSvg);
   }
 
   onPress() {

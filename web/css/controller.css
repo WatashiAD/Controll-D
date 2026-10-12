@@ -130,10 +130,12 @@
 
 .ctrl.active .face {
   background: var(--ctrl-active);
-  border-color: var(--accent);
+  border: 2px solid var(--accent);
   border-radius: var(--m3-radius-active);
   transform: scale(0.92);
-  box-shadow: var(--glow), inset 0 0 18px rgba(0, 0, 0, 0.2);
+  outline: 2.5px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 .ctrl.dim .face { opacity: var(--op, 1); }
@@ -178,7 +180,8 @@
 
 .ctrl.stick.active[data-shape="flower"] .well-flower {
   stroke: var(--accent);
-  filter: drop-shadow(0 0 10px var(--accent));
+  stroke-width: 3.5px;
+  filter: none;
 }
 
 .ctrl.stick .knob {
@@ -191,7 +194,7 @@
   border-radius: 50%;
   background: var(--knob-bg, radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.06)));
   border: 2px solid var(--accent);
-  box-shadow: var(--glow);
+  box-shadow: none;
   pointer-events: none;
   z-index: 2;
   transition: transform 130ms cubic-bezier(0.2, 0.8, 0.4, 1), box-shadow 80ms ease, border-color 80ms ease;
@@ -203,7 +206,9 @@
 
 .ctrl.stick.active .knob {
   border-color: var(--accent);
-  box-shadow: 0 0 16px var(--accent), inset 0 0 8px rgba(255, 255, 255, 0.35);
+  outline: 2.5px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 /* ---------------- dpad ---------------- */
@@ -267,7 +272,8 @@
 .ctrl.dpad.active[data-shape="cookie"] .face-cookie,
 .ctrl.dpad.active[data-shape="clover"] .face-clover {
   stroke: var(--accent);
-  filter: drop-shadow(0 0 10px var(--accent));
+  stroke-width: 3.5px;
+  filter: none;
 }
 
 .ctrl .face-cookie {
@@ -298,7 +304,8 @@
 .ctrl.active[data-shape="cookie"] .face-cookie,
 .ctrl.active[data-shape="clover"] .face-cookie {
   stroke: var(--accent);
-  filter: drop-shadow(0 0 10px var(--accent));
+  stroke-width: 3.5px;
+  filter: none;
   transform: scale(0.93);
 }
 
@@ -309,18 +316,16 @@
 
 .ctrl.dpad .seg {
   position: absolute;
-  background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: transparent;
+  border: none;
   pointer-events: none;
   display: grid;
   place-items: center;
-  color: var(--muted);
+  color: var(--lbl);
   transition:
     border-radius 140ms cubic-bezier(0.2, 0, 0, 1),
     transform 120ms cubic-bezier(0.2, 0, 0, 1),
     background 60ms linear,
-    border-color 60ms linear,
-    box-shadow 120ms ease,
     color 60ms linear;
 }
 
@@ -334,21 +339,25 @@
   display: block;
 }
 
-.ctrl.dpad .seg.up    { left: 33%; top: 3%;    width: 34%; height: 34%; border-radius: 12px 12px 5px 5px; }
-.ctrl.dpad .seg.down  { left: 33%; bottom: 3%; width: 34%; height: 34%; border-radius: 5px 5px 12px 12px; }
-.ctrl.dpad .seg.left  { left: 3%;  top: 33%;   width: 34%; height: 34%; border-radius: 12px 5px 5px 12px; }
-.ctrl.dpad .seg.right { right: 3%; top: 33%;   width: 34%; height: 34%; border-radius: 5px 12px 12px 5px; }
+.ctrl.dpad .seg.up    { left: 33%; top: 3%;    width: 34%; height: 34%; border-radius: 50%; }
+.ctrl.dpad .seg.down  { left: 33%; bottom: 3%; width: 34%; height: 34%; border-radius: 50%; }
+.ctrl.dpad .seg.left  { left: 3%;  top: 33%;   width: 34%; height: 34%; border-radius: 50%; }
+.ctrl.dpad .seg.right { right: 3%; top: 33%;   width: 34%; height: 34%; border-radius: 50%; }
 
-.ctrl.dpad .seg.up.on    { border-radius: 18px 18px 3px 3px; transform: translateY(-2px) scale(1.03); }
-.ctrl.dpad .seg.down.on  { border-radius: 3px 3px 18px 18px; transform: translateY(2px) scale(1.03); }
-.ctrl.dpad .seg.left.on  { border-radius: 18px 3px 3px 18px; transform: translateX(-2px) scale(1.03); }
-.ctrl.dpad .seg.right.on { border-radius: 3px 18px 18px 3px; transform: translateX(2px) scale(1.03); }
+.ctrl.dpad .seg.up.on    { transform: translateY(-2px) scale(0.95); }
+.ctrl.dpad .seg.down.on  { transform: translateY(2px) scale(0.95); }
+.ctrl.dpad .seg.left.on  { transform: translateX(-2px) scale(0.95); }
+.ctrl.dpad .seg.right.on { transform: translateX(2px) scale(0.95); }
 
 .ctrl.dpad .seg.on {
-  background: var(--ctrl-active);
-  border-color: var(--accent);
-  box-shadow: var(--glow);
-  color: var(--accent);
+  background: rgba(208, 188, 255, 0.32);
+  border: none;
+  border-radius: 50%;
+  transform: scale(0.92);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  box-shadow: none;
+  color: var(--ctrl-text);
 }
 
 .ctrl.dpad[data-shape="clover"] .seg.on {
@@ -356,6 +365,8 @@
   border: none;
   border-radius: 50%;
   transform: scale(0.92);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
   box-shadow: none;
   color: var(--ctrl-text);
 }
@@ -386,13 +397,14 @@
 
 .ctrl.cluster.active .face-clover {
   stroke: var(--accent);
-  filter: drop-shadow(0 0 10px var(--accent));
+  stroke-width: 3.5px;
+  filter: none;
 }
 
-[data-ctheme="lavender"] .ctrl.cluster .face-clover,
-[data-ctheme="expressive"] .ctrl.cluster .face-clover,
-[data-ctheme="expressive"] .ctrl.dpad .face-clover,
-[data-ctheme="expressive"] .ctrl.stick .well-flower {
+[data-ctheme="lavender"] .ctrl.cluster:not(.active) .face-clover,
+[data-ctheme="expressive"] .ctrl.cluster:not(.active) .face-clover,
+[data-ctheme="expressive"] .ctrl.dpad:not(.active) .face-clover,
+[data-ctheme="expressive"] .ctrl.stick:not(.active) .well-flower {
   stroke: none;
   filter: none;
 }
@@ -401,7 +413,7 @@
   display: none;
 }
 
-[data-ctheme="expressive"] .ctrl .face {
+[data-ctheme="expressive"] .ctrl:not(.active) .face {
   box-shadow: none;
   border: none;
 }
@@ -437,6 +449,8 @@
 
 .ctrl.cluster .cluster-btn.active {
   background: rgba(208, 188, 255, 0.32);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
   transform: scale(0.92);
 }
 
@@ -476,17 +490,19 @@
   border-color: var(--accent);
   border-radius: 50%;
   transform: scale(0.92);
-  box-shadow: var(--glow);
+  outline: 2.5px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
-/* Glyph & shape active glow (PlayStation shapes & icons) */
+/* Glyph & shape active outline (PlayStation shapes & icons) */
 .ctrl[data-glyph="triangle"].active .face,
-.ctrl[data-shape="triangle"].active .face { border-color: #2ed573; box-shadow: 0 0 16px rgba(46, 213, 115, 0.7); }
-.ctrl[data-glyph="circle"].active .face   { border-color: #ff4757; box-shadow: 0 0 16px rgba(255, 71, 87, 0.7); }
+.ctrl[data-shape="triangle"].active .face { border-color: #2ed573; outline: 2.5px solid #2ed573; outline-offset: 2px; box-shadow: none; }
+.ctrl[data-glyph="circle"].active .face   { border-color: #ff4757; outline: 2.5px solid #ff4757; outline-offset: 2px; box-shadow: none; }
 .ctrl[data-glyph="cross"].active .face,
-.ctrl[data-shape="cross"].active .face    { border-color: #1e90ff; box-shadow: 0 0 16px rgba(30, 144, 255, 0.7); }
+.ctrl[data-shape="cross"].active .face    { border-color: #1e90ff; outline: 2.5px solid #1e90ff; outline-offset: 2px; box-shadow: none; }
 .ctrl[data-glyph="square"].active .face,
-.ctrl[data-shape="square"].active .face   { border-color: #e056fd; box-shadow: 0 0 16px rgba(224, 86, 253, 0.7); }
+.ctrl[data-shape="square"].active .face   { border-color: #e056fd; outline: 2.5px solid #e056fd; outline-offset: 2px; box-shadow: none; }
 
 /* ---------------- trigger (vertical slider) ---------------- */
 
@@ -510,6 +526,9 @@
 .ctrl.trigger.active .face {
   border-radius: 12px;
   transform: none;
+  outline: 2.5px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 /* ---------------- action (local buttons, e.g. fullscreen) ---------------- */
@@ -518,7 +537,9 @@
   border-color: var(--accent);
   border-radius: var(--m3-radius-active);
   transform: scale(0.92);
-  box-shadow: var(--glow), inset 0 0 18px rgba(0, 0, 0, 0.2);
+  outline: 2.5px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 /* (Editor styling extracted to editor.css) */
@@ -529,8 +550,8 @@
   display: none;
 }
 
-[data-ctheme="lavender"] .ctrl .face,
-[data-ctheme="expressive"] .ctrl .face {
+[data-ctheme="lavender"] .ctrl:not(.active) .face,
+[data-ctheme="expressive"] .ctrl:not(.active) .face {
   border: none;
   box-shadow: none;
 }
@@ -541,14 +562,14 @@
   box-shadow: none;
 }
 
-[data-ctheme="lavender"] .ctrl.stick[data-shape="flower"] .well-flower,
-[data-ctheme="expressive"] .ctrl.stick[data-shape="flower"] .well-flower {
+[data-ctheme="lavender"] .ctrl.stick[data-shape="flower"]:not(.active) .well-flower,
+[data-ctheme="expressive"] .ctrl.stick[data-shape="flower"]:not(.active) .well-flower {
   stroke: none;
   filter: none;
 }
 
-[data-ctheme="lavender"] .ctrl.dpad[data-shape="clover"] .face-clover,
-[data-ctheme="expressive"] .ctrl.dpad[data-shape="clover"] .face-clover {
+[data-ctheme="lavender"] .ctrl.dpad[data-shape="clover"]:not(.active) .face-clover,
+[data-ctheme="expressive"] .ctrl.dpad[data-shape="clover"]:not(.active) .face-clover {
   stroke: none;
   filter: none;
 }
