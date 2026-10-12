@@ -155,56 +155,11 @@ export class Editor {
       row("Opacity", `<md-slider data-k="opacity" min="20" max="100" step="1" value="${opacityPct}" labeled aria-label="Opacity"></md-slider>`),
     ];
 
-    if (d.type === "button" || d.type === "action") {
-      const currentShape = d.shape || (d.aspect < 0.75 ? "pill" : "cookie");
-      const shapeButtons = [
-        ["cookie", "Cookie"],
-        ["squircle", "Squircle"],
-        ["circle", "Circle"],
-        ["pill", "Pill"],
-        ["cut", "Cut"],
-        ["organic", "Organic"],
-        ["island", "Island"],
-      ].map(([val, label]) => `
-        <button type="button" class="shape-chip${currentShape === val ? " active" : ""}" data-shape-val="${val}">${label}</button>
-      `).join("");
-      rows.push(`<div class="prop prop-shapes"><span>Shape</span><div class="shape-chips">${shapeButtons}</div></div>`);
-    } else if (d.type === "stick") {
-      const currentShape = d.shape || "circle";
-      const shapeButtons = [
-        ["circle", "Circle"],
-        ["flower", "Flower"],
-      ].map(([val, label]) => `
-        <button type="button" class="shape-chip${currentShape === val ? " active" : ""}" data-shape-val="${val}">${label}</button>
-      `).join("");
-      rows.push(`<div class="prop prop-shapes"><span>Shape</span><div class="shape-chips">${shapeButtons}</div></div>`);
-    } else if (d.type === "dpad" || d.type === "island" || d.type === "cluster") {
-      const currentShape = d.shape || "cookie";
-      const shapeButtons = [
-        ["cookie", "Cookie"],
-        ["clover", "Clover"],
-        ["squircle", "Squircle"],
-        ["flower", "Flower"],
-      ].map(([val, label]) => `
-        <button type="button" class="shape-chip${currentShape === val ? " active" : ""}" data-shape-val="${val}">${label}</button>
-      `).join("");
-      rows.push(`<div class="prop prop-shapes"><span>Shape</span><div class="shape-chips">${shapeButtons}</div></div>`);
-    }
-
     this.props.innerHTML = rows.join("");
 
     this.props.querySelectorAll("[data-k]").forEach((input) => {
       const key = input.dataset.k;
       input.addEventListener("input", () => this._applyKey(key, input.value));
-    });
-
-    this.props.querySelectorAll(".shape-chip").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const val = btn.dataset.shapeVal;
-        this.stage.patchSelected({ shape: val });
-        this.props.querySelectorAll(".shape-chip").forEach((b) => b.classList.toggle("active", b === btn));
-        this._autosave();
-      });
     });
   }
 

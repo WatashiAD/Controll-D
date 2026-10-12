@@ -466,7 +466,21 @@ function bindSwitch(id, key, after) {
 bindSwitch("opt-haptics", "haptics", () => haptics.configure(settings));
 bindSwitch("opt-rumble", "rumble", () => haptics.configure(settings));
 bindSwitch("opt-autofs", "autoFullscreen");
-bindSwitch("opt-telemetry", "telemetry");
+bindSwitch("opt-telemetry", "telemetry", (enabled) => {
+  fetch("/api/telemetry", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ enabled }),
+  }).catch(() => {});
+  banner(enabled ? "Live telemetry enabled" : "Live telemetry turned off");
+});
+if (settings.telemetry !== undefined) {
+  fetch("/api/telemetry", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ enabled: !!settings.telemetry }),
+  }).catch(() => {});
+}
 bindSwitch("opt-show-rtt", "showRtt", () => {
   $("rtt-pill").hidden = !settings.showRtt;
 });
@@ -508,6 +522,16 @@ if (navigator.getBattery) {
     update();
     bat.addEventListener("levelchange", update);
     bat.addEventListener("chargingchange", update);
+  }).catch(() => {});
+}
+
+/* ---------------- font cache ---------------- */
+if ("caches" in window) {
+  const FONT_CSS_URL = "https://fonts.googleapis.com/css2?family=Biryani:wght@200;300;400;600;700;800;900&family=Palanquin+Dark:wght@400;500;600;700&family=Rubik+Mono+One&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap";
+  caches.open("controll-d-fonts-v1").then((cache) => {
+    cache.match(FONT_CSS_URL).then((cached) => {
+      if (!cached) cache.add(FONT_CSS_URL).catch(() => {});
+    });
   }).catch(() => {});
 }
 

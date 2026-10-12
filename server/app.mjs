@@ -75,6 +75,28 @@ export function createServerFromState(state) {
   const server = createServer(async (req, res) => {
     try {
       const url = new URL(req.url || "/", "http://x");
+      if (url.pathname === "/api/telemetry") {
+        if (req.method === "POST") {
+          let body = "";
+          req.on("data", (chunk) => {
+            body += chunk;
+            if (body.length > 2048) req.destroy();
+          });
+          req.on("end", () => {
+            try {
+              const data = JSON.parse(body || "{}");
+              const enabled = Boolean(data.enabled);
+              state.telemetry.setEnabled(enabled);
+              sendJson(res, 200, { ok: true, telemetry: enabled });
+            } catch {
+              sendJson(res, 400, { error: "bad json" });
+            }
+          });
+          return;
+        }
+        sendJson(res, 200, { telemetry: !!state.telemetry?.enabled });
+        return;
+      }
       if (req.method !== "GET" && req.method !== "HEAD") {
         res.writeHead(405, { "cache-control": "no-store" });
         res.end();
@@ -304,6 +326,23 @@ export async function main() {
   }
 
   const server = createServerFromState(state);
+
+  await new Promise((resolve) => {
+    server.once("error", (err) => {
+      if (err.code === "EADDRINUSE") {
+        console.error(`\n❌ Error: Port ${cfg.port} is already in use.`);
+        console.error(`   Another instance of Controll-D (or another service) is already running on port ${cfg.port}.`);
+        console.error(`   To terminate the existing process, run:`);
+        console.error(`     fuser -k ${cfg.port}/tcp\n`);
+        process.exit(1);
+      }
+      throw err;
+    });
+    server.listen(cfg.port, cfg.host, () => resolve());
+  });
+
+  state.telemetry.start(state);
+
   const lan = await lanIp();
   const phoneUrl = `http://${lan}:${cfg.port}/`;
 
@@ -318,11 +357,10 @@ export async function main() {
   }
   if (state.telemetry?.enabled) {
     console.log("  Telemetry : Anonymous live tracker active");
+  } else {
+    console.log("  Telemetry : Disabled");
   }
   console.log("");
-
-  server.listen(cfg.port, cfg.host);
-  state.telemetry.start(state);
 
   try {
     const qr = await QRCode.toString(phoneUrl, { type: "terminal", small: true });

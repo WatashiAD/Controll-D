@@ -34,27 +34,32 @@ function loadFile() {
 
 export function loadConfig() {
   const file = loadFile();
-  const pick = (envKey, fileKey, def, cast) => {
-    const raw = process.env[envKey] ?? file[fileKey];
+  const pick = (envKeys, fileKey, def, cast) => {
+    const keys = Array.isArray(envKeys) ? envKeys : [envKeys];
+    let raw = null;
+    for (const k of keys) {
+      if (process.env[k] != null) { raw = process.env[k]; break; }
+    }
+    if (raw == null) raw = file[fileKey];
     if (raw == null) return def;
     const v = cast(raw);
     return Number.isNaN(v) && typeof def === "number" ? def : v;
   };
   return {
-    host: pick("COTRLL_HOST", "host", DEFAULTS.host, String),
-    port: pick("COTRLL_PORT", "port", DEFAULTS.port, Number),
-    gamepadName: pick("COTRLL_GAMEPAD_NAME", "gamepad_name", DEFAULTS.gamepadName, String),
+    host: pick(["CONTROLL_HOST", "COTRLL_HOST"], "host", DEFAULTS.host, String),
+    port: pick(["CONTROLL_PORT", "COTRLL_PORT"], "port", DEFAULTS.port, Number),
+    gamepadName: pick(["CONTROLL_GAMEPAD_NAME", "COTRLL_GAMEPAD_NAME"], "gamepad_name", DEFAULTS.gamepadName, String),
     rateLimitPerSec: pick(
-      "COTRLL_RATE_PER_SEC", "rate_limit_per_sec", DEFAULTS.rateLimitPerSec, Number,
+      ["CONTROLL_RATE_PER_SEC", "COTRLL_RATE_PER_SEC"], "rate_limit_per_sec", DEFAULTS.rateLimitPerSec, Number,
     ),
     rateLimitBurst: pick(
-      "COTRLL_RATE_BURST", "rate_limit_burst", DEFAULTS.rateLimitBurst, Number,
+      ["CONTROLL_RATE_BURST", "COTRLL_RATE_BURST"], "rate_limit_burst", DEFAULTS.rateLimitBurst, Number,
     ),
     telemetry: pick(
-      "COTRLL_TELEMETRY", "telemetry", DEFAULTS.telemetry, (v) => v !== false && v !== "false" && v !== "0",
+      ["CONTROLL_TELEMETRY", "COTRLL_TELEMETRY"], "telemetry", DEFAULTS.telemetry, (v) => v !== false && v !== "false" && v !== "0",
     ),
     telemetryUrl: pick(
-      "COTRLL_TELEMETRY_URL", "telemetry_url", DEFAULTS.telemetryUrl, String,
+      ["CONTROLL_TELEMETRY_URL", "COTRLL_TELEMETRY_URL"], "telemetry_url", DEFAULTS.telemetryUrl, String,
     ),
   };
 }

@@ -2,8 +2,8 @@
 
 :root {
   --accent-user: null;
-  --font: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
-  --font-display: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font: 'Rubik', system-ui, -apple-system, Roboto, sans-serif;
+  --font-display: 'Rubik', 'Rubik Mono One', system-ui, sans-serif;
   --radius: 14px;
   --hud-h: 44px;
 }

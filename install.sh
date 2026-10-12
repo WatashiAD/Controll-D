@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
-# Cotrll-D Standalone Installer for Linux & macOS
-# Installs Cotrll-D and configures uinput permissions in a single command.
+# Controll-D Standalone Installer for Linux & macOS
+# Installs Controll-D and configures uinput permissions in a single command.
 
 set -e
 
-INSTALL_DIR="${HOME}/.local/share/cotrll-d"
+INSTALL_DIR="${HOME}/.local/share/controll-d"
+LEGACY_DIR="${HOME}/.local/share/cotrll-d"
 BIN_DIR="${HOME}/.local/bin"
 DESKTOP_DIR="${HOME}/.local/share/applications"
 REPO_URL="https://github.com/WatashiAD/Cotrll-D.git"
 TARBALL_URL="https://github.com/WatashiAD/Cotrll-D/archive/refs/heads/main.tar.gz"
 
-echo "🎮 Installing Cotrll-D v1.0..."
+echo "🎮 Installing Controll-D v1.0..."
 
 # 1. Check Node.js
 if ! command -v node >/dev/null 2>&1; then
@@ -31,7 +32,7 @@ fi
 
 # 2. Download / Clone
 mkdir -p "${INSTALL_DIR}"
-echo "📦 Downloading Cotrll-D into ${INSTALL_DIR}..."
+echo "📦 Downloading Controll-D into ${INSTALL_DIR}..."
 
 if command -v git >/dev/null 2>&1; then
   if [ -d "${INSTALL_DIR}/.git" ]; then
@@ -45,6 +46,12 @@ else
   curl -fsSL "${TARBALL_URL}" | tar -xz -C "${INSTALL_DIR}" --strip-components=1
 fi
 
+# Migrate legacy directory if exists
+if [ -d "${LEGACY_DIR}" ] && [ ! -L "${LEGACY_DIR}" ]; then
+  rm -rf "${LEGACY_DIR}"
+  ln -sf "${INSTALL_DIR}" "${LEGACY_DIR}"
+fi
+
 # 3. Install production dependencies
 echo "📦 Installing dependencies..."
 (cd "${INSTALL_DIR}" && npm install --omit=dev --no-audit --no-fund --quiet)
@@ -54,12 +61,14 @@ if [ "$(uname)" = "Linux" ]; then
   if [ ! -w /dev/uinput ]; then
     echo "⚙️  Configuring /dev/uinput permissions for virtual gamepad..."
     UDEV_RULE='KERNEL=="uinput", MODE="0660", GROUP="input", TAG+="uaccess"'
-    RULE_FILE="/etc/udev/rules.d/99-cotrll-d.rules"
+    RULE_FILE="/etc/udev/rules.d/99-controll-d.rules"
+    LEGACY_RULE="/etc/udev/rules.d/99-cotrll-d.rules"
 
     if [ ! -f "$RULE_FILE" ]; then
       if command -v sudo >/dev/null 2>&1; then
         echo "   (sudo requested to install udev rule to $RULE_FILE)"
         echo "$UDEV_RULE" | sudo tee "$RULE_FILE" >/dev/null
+        [ -f "$LEGACY_RULE" ] && sudo rm -f "$LEGACY_RULE" || true
         sudo udevadm control --reload-rules || true
         sudo udevadm trigger /dev/uinput || true
         sudo usermod -aG input "$USER" 2>/dev/null || true
@@ -73,47 +82,57 @@ fi
 
 # 5. Create CLI launcher binary
 mkdir -p "${BIN_DIR}"
-cat << 'EOF' > "${BIN_DIR}/cotrll-d"
+cat << 'EOF' > "${BIN_DIR}/controll-d"
 #!/usr/bin/env sh
-exec node "${HOME}/.local/share/cotrll-d/server/main.mjs" "$@"
+exec node "${HOME}/.local/share/controll-d/server/main.mjs" "$@"
 EOF
-chmod +x "${BIN_DIR}/cotrll-d"
+chmod +x "${BIN_DIR}/controll-d"
+
+# Symlink legacy cotrll-d command to controll-d
+ln -sf "${BIN_DIR}/controll-d" "${BIN_DIR}/cotrll-d"
 
 # 6. Create Desktop Entry (Linux)
 if [ "$(uname)" = "Linux" ]; then
   mkdir -p "${DESKTOP_DIR}"
-  cat << EOF > "${DESKTOP_DIR}/cotrll-d.desktop"
+  cat << EOF > "${DESKTOP_DIR}/controll-d.desktop"
 [Desktop Entry]
-Name=Cotrll-D
+Name=Controll-D
 Comment=Wireless Virtual Gamepad for PC
-Exec=${BIN_DIR}/cotrll-d
+Exec=${BIN_DIR}/controll-d
 Terminal=true
 Type=Application
 Categories=Game;Utility;
 EOF
-  chmod +x "${DESKTOP_DIR}/cotrll-d.desktop"
+  chmod +x "${DESKTOP_DIR}/controll-d.desktop"
+  [ -f "${DESKTOP_DIR}/cotrll-d.desktop" ] && rm -f "${DESKTOP_DIR}/cotrll-d.desktop" || true
 fi
 
 # 7. Check PATH
 case ":$PATH:" in
   *":${BIN_DIR}:"*) ;;
   *)
-    echo "💡 Note: Ensure ${BIN_DIR} is in your PATH to run 'cotrll-d' directly:"
+    echo "💡 Note: Ensure ${BIN_DIR} is in your PATH to run 'controll-d' directly:"
     echo "   export PATH=\"\$HOME/.local/bin:\$PATH\""
     ;;
 esac
 
 echo ""
-echo "✨ Cotrll-D installation complete!"
-echo "   Launch command : ${BIN_DIR}/cotrll-d"
-echo "   Or simply type : cotrll-d"
+echo "✨ Controll-D installation complete!"
+echo "   Launch command : ${BIN_DIR}/controll-d"
+echo "   Or simply type : controll-d"
 echo ""
 
-# Launch if running interactively
+# 8. Launch if running interactively
 if [ -t 0 ]; then
-  read -p "🚀 Start Cotrll-D now? (Y/n) " -n 1 -r
+  read -p "🚀 Start Controll-D now? (Y/n) " -n 1 -r
   echo ""
   if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
-    exec "${BIN_DIR}/cotrll-d"
+    if fuser 8765/tcp >/dev/null 2>&1; then
+      echo "⚠️  Port 8765 is already in use by an active Controll-D instance."
+      echo "   Restarting instance..."
+      fuser -k 8765/tcp >/dev/null 2>&1 || true
+      sleep 1
+    fi
+    exec "${BIN_DIR}/controll-d"
   fi
 fi

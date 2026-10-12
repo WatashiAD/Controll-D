@@ -18,13 +18,30 @@ export class TelemetryReporter {
   }
 
   start(state) {
-    if (!this.enabled || !this.url) return;
     this.state = state;
+    if (!this.enabled || !this.url) return;
     this.sendPing("online");
     this.timer = setInterval(() => {
       this.sendPing("heartbeat");
     }, 45000);
     if (this.timer.unref) this.timer.unref();
+  }
+
+  setEnabled(enabled) {
+    const next = Boolean(enabled);
+    if (this.enabled === next) return;
+    this.enabled = next;
+    if (this.enabled) {
+      if (!this.timer && this.state) {
+        this.start(this.state);
+      }
+    } else {
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
+      this.sendPing("offline");
+    }
   }
 
   notifySessionChange() {
