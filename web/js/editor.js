@@ -4,13 +4,14 @@
 
 import { listLayouts, persistLayout, sanitizeLayout, PRESET_TITLES } from "./layout.js";
 
-const PANEL_KEY = "cotrll.v1.panel";
+const PANEL_KEY = "controll.v1.panel";
+const LEGACY_PANEL_KEY = "cotrll.v1.panel";
 const NEW_OPTION = "__new__";
 const PANEL_W = 270;
 
 function readPanelPos() {
   try {
-    const raw = localStorage.getItem(PANEL_KEY);
+    const raw = localStorage.getItem(PANEL_KEY) || localStorage.getItem(LEGACY_PANEL_KEY);
     const p = raw ? JSON.parse(raw) : null;
     if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) return p;
   } catch {
@@ -40,6 +41,17 @@ export class Editor {
     document.getElementById("layout-save").addEventListener("click", () => this.saveLayout());
     this.select.addEventListener("change", () => this.loadSelected());
 
+    const snapBtn = document.getElementById("btn-toggle-snap");
+    if (snapBtn) {
+      this._syncSnapBtn();
+      snapBtn.addEventListener("click", () => {
+        const next = !this.app.getSnapEnabled();
+        this.app.setSnapEnabled(next);
+        this._syncSnapBtn();
+        this.app.banner(next ? "Magnetic snapping on" : "Magnetic snapping off");
+      });
+    }
+
     this._initDrag();
 
     stage.onSelectionChange = () => this.renderProps();
@@ -51,10 +63,19 @@ export class Editor {
     this.refreshLayoutSelect(app.layoutName);
   }
 
+  _syncSnapBtn() {
+    const snapBtn = document.getElementById("btn-toggle-snap");
+    if (!snapBtn) return;
+    const enabled = this.app.getSnapEnabled ? this.app.getSnapEnabled() : true;
+    snapBtn.classList.toggle("active", enabled);
+    snapBtn.style.color = enabled ? "var(--accent, #a8c7fa)" : "var(--txt-dim, #777)";
+  }
+
   enter() {
     this.stage.setGrid(false);
     this.panel.hidden = false;
     this._placePanel();
+    this._syncSnapBtn();
     this.refreshLayoutSelect(this.app.layoutName);
     this.renderProps();
     /* Re-assert: must stay visible while edit mode is on. */
@@ -135,8 +156,9 @@ export class Editor {
     ];
 
     if (d.type === "button" || d.type === "action") {
-      const currentShape = d.shape || (d.aspect < 0.75 ? "pill" : "squircle");
+      const currentShape = d.shape || (d.aspect < 0.75 ? "pill" : "cookie");
       const shapeButtons = [
+        ["cookie", "Cookie"],
         ["squircle", "Squircle"],
         ["circle", "Circle"],
         ["pill", "Pill"],
@@ -157,8 +179,9 @@ export class Editor {
       `).join("");
       rows.push(`<div class="prop prop-shapes"><span>Shape</span><div class="shape-chips">${shapeButtons}</div></div>`);
     } else if (d.type === "dpad" || d.type === "island" || d.type === "cluster") {
-      const currentShape = d.shape || (d.type === "island" || d.type === "cluster" ? "clover" : "squircle");
+      const currentShape = d.shape || "cookie";
       const shapeButtons = [
+        ["cookie", "Cookie"],
         ["clover", "Clover"],
         ["squircle", "Squircle"],
         ["flower", "Flower"],

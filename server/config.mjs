@@ -15,7 +15,7 @@ const CONFIG_PATH = process.env.COTRLL_CONFIG || resolve(ROOT, "config.json");
 const DEFAULTS = {
   host: "0.0.0.0",
   port: 8765,
-  gamepadName: "Cotrll-D Virtual Gamepad",
+  gamepadName: "Controll-D Virtual Gamepad",
   rateLimitPerSec: 800.0,
   rateLimitBurst: 1600.0,
   telemetry: true,

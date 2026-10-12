@@ -1,15 +1,16 @@
 {
-  "name": "cotrll-d",
+  "name": "controll-d",
   "version": "1.0.0",
   "license": "MIT",
   "description": "Turn your phone into a fully customizable wireless PC game controller.",
   "main": "server/main.mjs",
   "bin": {
-    "cotrll-d": "server/main.mjs"
+    "controll-d": "server/main.mjs"
   },
   "scripts": {
     "start": "node server/main.mjs",
-    "dev": "node --watch server/main.mjs"
+    "dev": "node --watch server/main.mjs",
+    "update": "node server/update.mjs"
   },
   "keywords": [],
   "type": "commonjs",

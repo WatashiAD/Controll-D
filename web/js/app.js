@@ -10,12 +10,14 @@ import { Stage } from "./controls.js";
 import { defaultLayout, sanitizeLayout, listLayouts, LAYOUT_VERSION, PRESET_TITLES, applyButtonStyleToLayout, BUTTON_STYLES } from "./layout.js";
 import { Editor } from "./editor.js";
 import { ColorPicker } from "./color-picker.js";
+import { BUILTIN_SKINS, applyStageBackground, exportCurrentSkin, parseSkinJSON, SKINNING_GUIDE_HTML } from "./skins.js";
 
 const $ = (id) => document.getElementById(id);
 
 const settings = loadSettings();
 haptics.configure(settings);
 applyColors(settings.colorPrimary, settings.colorSecondary);
+applyStageBackground(settings.background);
 
 const transport = new Transport();
 const stage = new Stage($("stage"), {
@@ -26,9 +28,16 @@ const stage = new Stage($("stage"), {
 
 const app = {
   dirty: false,
-  layoutName: settings.layoutName || "expressive",
+  layoutName: settings.layoutName || "default",
   storeLayoutName(name) {
     settings.layoutName = name;
+    saveSettings(settings);
+  },
+  getSnapEnabled() {
+    return settings.snapEnabled !== false;
+  },
+  setSnapEnabled(v) {
+    settings.snapEnabled = v;
     saveSettings(settings);
   },
   banner,
@@ -57,8 +66,8 @@ function loadCurrentLayout() {
   /* Migrate once: pre-Switch layouts (older version) fall back to default. */
   const fresh = stored && stored.version === LAYOUT_VERSION ? stored : null;
   const layout = sanitizeLayout(fresh) || defaultLayout();
-  app.layoutName = fresh ? layout.name : "expressive";
-  applyButtonStyleToLayout(layout, settings.buttonStyle || "xbox");
+  app.layoutName = fresh ? layout.name : (settings.layoutName || "default");
+  applyButtonStyleToLayout(layout, settings.buttonStyle || "nintendo");
   stage.load(layout);
 }
 loadCurrentLayout();
@@ -88,12 +97,23 @@ transport.addEventListener("status", (e) => {
   else if (status === "error" || status === "kicked") dot.classList.add("err");
   $("status-text").textContent = text || status;
 
+  const pill = $("rtt-pill");
   if (status === "on") {
     showController();
-    if (transport.rtt == null) $("rtt-pill").hidden = !settings.showRtt;
+    if (transport.rtt != null) {
+      pill.textContent = `${Math.round(transport.rtt)} ms`;
+      pill.hidden = !settings.showRtt;
+    } else {
+      pill.hidden = !settings.showRtt;
+    }
+  } else if (status === "reconnecting" || status === "connecting") {
+    pill.hidden = false;
+    pill.innerHTML = '<span class="dot-loader"><span></span><span></span><span></span></span>';
   } else if (status === "error") {
+    pill.hidden = true;
     banner(`Connection failed (${text || "error"}) — retrying…`);
   } else if (status === "kicked") {
+    pill.hidden = true;
     showController();
     banner("This phone was disconnected — another controller took over", 4000);
     $("status-dot").className = "dot err";
@@ -288,6 +308,149 @@ if (cpRoot) {
   });
 }
 
+/* UI Skins & Custom Background */
+const skinSelect = $("settings-skin-select");
+if (skinSelect) {
+  skinSelect.innerHTML =
+    BUILTIN_SKINS.map((s) => `<md-select-option value="${s.id}"><div slot="headline">${s.name}</div></md-select-option>`).join("") +
+    `<md-select-option value="custom"><div slot="headline">Custom</div></md-select-option>`;
+  skinSelect.value = settings.skinPreset || "expressive";
+  skinSelect.addEventListener("change", () => {
+    const chosen = skinSelect.value;
+    const found = BUILTIN_SKINS.find((s) => s.id === chosen);
+    if (found) {
+      settings.skinPreset = found.id;
+      settings.colorPrimary = found.colors.primary;
+      settings.colorSecondary = found.colors.secondary;
+      settings.buttonStyle = found.buttonStyle;
+      settings.defaultShape = found.shape;
+      applyColors(found.colors.primary, found.colors.secondary);
+      applyActiveButtonStyle(found.buttonStyle);
+      if (buttonStyleSelect) buttonStyleSelect.value = found.buttonStyle;
+      saveSettings(settings);
+      banner(`Skin: ${found.name}`);
+    }
+  });
+}
+
+const bgFileInput = $("skin-bg-file");
+const bgUploadBtn = $("btn-upload-bg");
+const bgResetBtn = $("btn-reset-bg");
+
+if (bgUploadBtn && bgFileInput) {
+  bgUploadBtn.addEventListener("click", () => bgFileInput.click());
+  bgFileInput.addEventListener("change", () => {
+    const file = bgFileInput.files && bgFileInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      settings.background = { type: "image", value: e.target.result };
+      saveSettings(settings);
+      applyStageBackground(settings.background);
+      banner("Custom background applied");
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+if (bgResetBtn) {
+  bgResetBtn.addEventListener("click", () => {
+    settings.background = { type: "default" };
+    saveSettings(settings);
+    applyStageBackground(settings.background);
+    banner("Background reset to default");
+  });
+}
+
+const exportBtn = $("btn-export-skin");
+if (exportBtn) {
+  exportBtn.addEventListener("click", () => {
+    exportCurrentSkin(settings, `controll-d-${settings.skinPreset || "skin"}`);
+    banner("Skin exported");
+  });
+}
+
+const importBtn = $("btn-import-skin");
+const importFileInput = $("skin-import-file");
+if (importBtn && importFileInput) {
+  importBtn.addEventListener("click", () => importFileInput.click());
+  importFileInput.addEventListener("change", () => {
+    const file = importFileInput.files && importFileInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imported = parseSkinJSON(e.target.result);
+      if (!imported) {
+        banner("Invalid skin JSON file");
+        return;
+      }
+      settings.skinPreset = "custom";
+      if (skinSelect) skinSelect.value = "custom";
+      settings.colorPrimary = imported.colorPrimary;
+      settings.colorSecondary = imported.colorSecondary;
+      settings.buttonStyle = imported.buttonStyle;
+      settings.defaultShape = imported.shape;
+      settings.background = imported.background;
+      saveSettings(settings);
+
+      applyColors(imported.colorPrimary, imported.colorSecondary);
+      applyStageBackground(imported.background);
+      applyActiveButtonStyle(imported.buttonStyle);
+      if (buttonStyleSelect) buttonStyleSelect.value = imported.buttonStyle;
+      banner(`Skin loaded: ${imported.name}`);
+    };
+    reader.readAsText(file);
+  });
+}
+
+const guideModal = $("skin-guide-dialog");
+const guideOpenBtn = $("btn-open-skin-guide");
+const guideCloseBtn = $("skin-guide-close");
+const guideContent = $("skin-guide-content");
+
+if (guideOpenBtn && guideModal) {
+  guideOpenBtn.addEventListener("click", () => {
+    if (guideContent) guideContent.innerHTML = SKINNING_GUIDE_HTML;
+    void guideModal.show();
+  });
+}
+if (guideCloseBtn && guideModal) {
+  guideCloseBtn.addEventListener("click", () => {
+    void guideModal.close();
+  });
+}
+
+/* ---------------- landscape rotation hint ---------------- */
+const rotateHint = $("rotate-hint");
+const rotateClose = $("rotate-hint-close");
+if (rotateClose && rotateHint) {
+  rotateClose.addEventListener("click", () => {
+    rotateHint.setAttribute("data-dismissed", "true");
+  });
+}
+
+/* ---------------- update check ---------------- */
+async function checkForUpdates() {
+  try {
+    const res = await fetch("/api/check-update");
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.updateAvailable) {
+      const badge = $("update-badge");
+      if (badge) {
+        badge.hidden = false;
+        badge.title = `Update available (${data.behind || 1} commit(s) behind). Run: npm run update`;
+        badge.addEventListener("click", () => {
+          banner("Update available! Run 'npm run update' in terminal on the host PC.", 5000);
+        });
+      }
+    }
+  } catch {
+    /* LAN-only or offline */
+  }
+}
+checkForUpdates();
+
 /* options (md-switch / md-slider) */
 function bindSwitch(id, key, after) {
   const el = $(id);
@@ -349,4 +512,5 @@ if (navigator.getBattery) {
 }
 
 /* debug/test hook */
-window.__cotrll = { stage, transport, settings, app };
+window.__controll = { stage, transport, settings, app };
+window.__cotrll = window.__controll;

@@ -82,11 +82,19 @@ export function createServerFromState(state) {
       }
       if (url.pathname === "/api/info") {
         sendJson(res, 200, {
-          name: "cotrll-d",
+          name: "controll-d",
           version: "1.0.0",
           pad: state.pad !== null,
           clients: state.active ? 1 : 0,
           telemetry: !!state.telemetry?.enabled,
+        });
+        return;
+      }
+      if (url.pathname === "/api/check-update") {
+        sendJson(res, 200, {
+          name: "controll-d",
+          version: "1.0.0",
+          updateCommand: "npm run update",
         });
         return;
       }
@@ -300,7 +308,7 @@ export async function main() {
   const phoneUrl = `http://${lan}:${cfg.port}/`;
 
   console.log("");
-  console.log("  🎮 Cotrll-D v1.0 — Wireless Virtual Gamepad");
+  console.log("  🎮 Controll-D v1.0 — Wireless Virtual Gamepad");
   console.log("  ───────────────────────────────────────────");
   console.log(`  Gamepad   : ${state.pad ? `Active (${cfg.gamepadName})` : "Virtual pad disabled"}`);
   console.log(`  Phone URL : ${phoneUrl}`);

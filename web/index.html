@@ -6,11 +6,12 @@
   <meta name="theme-color" content="#383838">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <title>Cotrll-D</title>
+  <title>Controll-D</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='6' y='26' width='88' height='50' rx='24' fill='%23c9b6f6'/%3E%3Ccircle cx='32' cy='51' r='8' fill='%23242424'/%3E%3Ccircle cx='68' cy='43' r='6' fill='%23242424'/%3E%3Ccircle cx='68' cy='60' r='6' fill='%23242424'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/themes.css?v=4">
-  <link rel="stylesheet" href="css/base.css?v=4">
-  <link rel="stylesheet" href="css/controller.css?v=4">
+  <link rel="stylesheet" href="css/themes.css?v=5">
+  <link rel="stylesheet" href="css/base.css?v=5">
+  <link rel="stylesheet" href="css/controller.css?v=5">
+  <link rel="stylesheet" href="css/editor.css?v=5">
   <script type="importmap">
     {
       "imports": {
@@ -21,6 +22,13 @@
   </script>
 </head>
 <body>
+  <!-- Landscape orientation hint for mobile devices -->
+  <aside id="rotate-hint" role="status" aria-live="polite">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 18h.01"/></svg>
+    <span>Rotate device to landscape for best gaming experience</span>
+    <button type="button" id="rotate-hint-close" aria-label="Dismiss">&times;</button>
+  </aside>
+
   <!-- Controller -->
   <div id="app">
     <header id="hud">
@@ -29,6 +37,10 @@
         <span id="status-text">…</span>
         <span id="rtt-pill" class="pill" hidden>— ms</span>
         <span id="batt-pill" class="pill" hidden>—%</span>
+        <span id="update-badge" class="pill" hidden title="Update available! Run npm run update">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          Update
+        </span>
       </div>
       <div class="hud-right">
         <md-icon-button id="btn-fullscreen" aria-label="Fullscreen">
@@ -45,6 +57,7 @@
 
     <div id="stage">
       <div id="grid" hidden></div>
+      <div id="snap-guides-layer"></div>
     </div>
 
     <!-- Editor panel: small floating card, drag by the header -->
@@ -53,6 +66,9 @@
         <span class="ed-grip" title="Drag" aria-hidden="true"></span>
         <md-outlined-select id="layout-select" aria-label="Layout">
         </md-outlined-select>
+        <md-icon-button id="btn-toggle-snap" title="Magnetic Snap" aria-label="Magnetic snap">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15-4-4 6.75-6.77a7.78 7.78 0 0 1 11 11L13 22l-4-4 6.36-6.36a2.12 2.12 0 1 0-3-3L6 15z"/></svg>
+        </md-icon-button>
         <md-text-button id="layout-save" aria-label="Save layout">Save</md-text-button>
         <md-filled-button id="ed-done">Done</md-filled-button>
       </div>
@@ -120,6 +136,39 @@
           <!-- In-App Custom Color Picker Component -->
           <div id="custom-color-picker-root"></div>
         </section>
+
+        <section class="settings-card">
+          <div class="card-head">
+            <h3>UI Skins & Background</h3>
+          </div>
+          <div class="field">
+            <span>Skin Preset</span>
+            <md-outlined-select id="settings-skin-select" aria-label="Skin preset"></md-outlined-select>
+          </div>
+          <div class="field" style="margin-top: 10px;">
+            <span>Custom Background</span>
+            <div class="skin-bg-actions" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <input type="file" id="skin-bg-file" accept="image/*" style="display: none;">
+              <md-outlined-button id="btn-upload-bg">
+                <svg slot="icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                Choose Image…
+              </md-outlined-button>
+              <md-text-button id="btn-reset-bg">Reset Background</md-text-button>
+            </div>
+          </div>
+          <div class="card-row" style="margin-top: 14px; border-top: 1px solid var(--border-soft); padding-top: 12px;">
+            <div class="card-row-info">
+              <strong>Community Skinning</strong>
+              <small>Import/export skins (.json) or view creation guide</small>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <input type="file" id="skin-import-file" accept=".json,application/json" style="display: none;">
+              <md-outlined-button id="btn-import-skin">Import</md-outlined-button>
+              <md-outlined-button id="btn-export-skin">Export</md-outlined-button>
+              <md-filled-tonal-button id="btn-open-skin-guide">Guide</md-filled-tonal-button>
+            </div>
+          </div>
+        </section>
       </div>
 
       <!-- Panel 2: Input & Feel -->
@@ -182,7 +231,7 @@
             <strong>Active Development Notice</strong>
           </div>
           <p class="dev-notice-text">
-            Cotrll-D is currently in active development (v1.0 Preview). Layouts, joydev mappings, and rumble protocol are actively being refined. Feedback and contributions are welcome on GitHub!
+            Controll-D is currently in active development (v1.0 Preview). Layouts, joydev mappings, and rumble protocol are actively being refined. Feedback and contributions are welcome on GitHub!
           </p>
         </section>
 
@@ -227,8 +276,8 @@
               <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
               Game or emulator doesn't see the controller
             </summary>
-            <p>1. Cotrll-D creates a virtual Xbox 360 controller via <code>/dev/uinput</code>.<br>
-               2. In emulators (Eden, Yuzu, Ryujinx, RPCS3, Dolphin), go to Controller Settings and select <strong>Xbox 360 Controller (Cotrll-D)</strong>.<br>
+            <p>1. Controll-D creates a virtual Xbox 360 controller via <code>/dev/uinput</code>.<br>
+               2. In emulators (Eden, Yuzu, Ryujinx, RPCS3, Dolphin), go to Controller Settings and select <strong>Xbox 360 Controller (Controll-D)</strong>.<br>
                3. On Linux, ensure your user account has read/write permissions to <code>/dev/uinput</code>.</p>
           </details>
 
@@ -254,8 +303,17 @@
     </div>
 
     <div slot="actions" class="settings-footer">
-      <span class="settings-footer-version">Cotrll-D · v1.0 Preview</span>
+      <span class="settings-footer-version">Controll-D · v1.0 Preview</span>
       <md-filled-button id="settings-close">Done</md-filled-button>
+    </div>
+  </md-dialog>
+
+  <!-- Skinning Guide Dialog -->
+  <md-dialog id="skin-guide-dialog">
+    <div slot="headline">Controll-D Skinning Guide</div>
+    <div slot="content" id="skin-guide-content" style="max-height: 65vh; overflow-y: auto;"></div>
+    <div slot="actions">
+      <md-filled-button id="skin-guide-close">Close</md-filled-button>
     </div>
   </md-dialog>
 

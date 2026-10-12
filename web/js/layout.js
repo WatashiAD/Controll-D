@@ -5,7 +5,7 @@ import { BUTTON_SET, AXIS_SET } from "./codes.js";
 import { ACTION_SET } from "./controls.js";
 
 export const LAYOUT_VERSION = 4;
-export const SHAPE_OPTIONS = ["squircle", "circle", "pill", "cut", "organic", "clover", "flower", "island"];
+export const SHAPE_OPTIONS = ["cookie", "clover", "squircle", "circle", "pill", "cut", "organic", "flower", "island"];
 
 let uidCounter = 0;
 export function uid(prefix = "c") {
@@ -72,16 +72,16 @@ export function nintendoLayout(name = "default") {
     controls: [
       { id: uid(), type: "stick", label: "", x: 20, y: 62, size: 28, aspect: 1, opacity: 1,
         map: { x: "ABS_X", y: "ABS_Y" }, mode: "floating", deadzone: 12, invertY: false },
-      { id: uid(), type: "dpad", label: "", x: 20, y: 30, size: 22, aspect: 1, opacity: 1,
+      { id: uid(), type: "dpad", label: "", x: 20, y: 30, size: 22, aspect: 1, opacity: 1, shape: "cookie",
         map: { x: "ABS_HAT0X", y: "ABS_HAT0Y" }, deadzone: 0, invertY: false },
       /* Nintendo diamond: X top, A right, B bottom, Y left -> in Eden/Yuzu maps to Switch X/A/B/Y */
-      { id: uid(), type: "button", label: "X", x: 81, y: 36, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "X", x: 81, y: 36, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_WEST" }, behavior: "press" },
-      { id: uid(), type: "button", label: "A", x: 88, y: 48, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "A", x: 88, y: 48, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_EAST" }, behavior: "press" },
-      { id: uid(), type: "button", label: "B", x: 81, y: 60, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "B", x: 81, y: 60, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_SOUTH" }, behavior: "press" },
-      { id: uid(), type: "button", label: "Y", x: 74, y: 48, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "Y", x: 74, y: 48, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_NORTH" }, behavior: "press" },
       { id: uid(), type: "button", label: "L", x: 16, y: 8, size: 14, aspect: 0.45, opacity: 1, shape: "pill",
         map: { code: "BTN_TL" }, behavior: "press" },
@@ -111,20 +111,20 @@ export function playstationLayout(name = "playstation") {
     version: LAYOUT_VERSION,
     name,
     controls: [
-      { id: uid(), type: "dpad", label: "", x: 20, y: 32, size: 24, aspect: 1, opacity: 1,
+      { id: uid(), type: "dpad", label: "", x: 20, y: 32, size: 24, aspect: 1, opacity: 1, shape: "cookie",
         map: { x: "ABS_HAT0X", y: "ABS_HAT0Y" }, deadzone: 0, invertY: false },
       { id: uid(), type: "stick", label: "", x: 33, y: 70, size: 25, aspect: 1, opacity: 1,
         map: { x: "ABS_X", y: "ABS_Y" }, mode: "floating", deadzone: 12, invertY: false },
       { id: uid(), type: "stick", label: "", x: 67, y: 70, size: 25, aspect: 1, opacity: 1,
         map: { x: "ABS_RX", y: "ABS_RY" }, mode: "fixed", deadzone: 12, invertY: false },
       /* The Shapes diamond: Triangle top, Circle right, Cross bottom, Square left */
-      { id: uid(), type: "button", label: "▲", x: 80, y: 22, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "▲", x: 80, y: 22, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_WEST" }, behavior: "press" },
-      { id: uid(), type: "button", label: "●", x: 88, y: 34, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "●", x: 88, y: 34, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_EAST" }, behavior: "press" },
-      { id: uid(), type: "button", label: "✕", x: 80, y: 46, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "✕", x: 80, y: 46, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_SOUTH" }, behavior: "press" },
-      { id: uid(), type: "button", label: "■", x: 72, y: 34, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "■", x: 72, y: 34, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_NORTH" }, behavior: "press" },
       { id: uid(), type: "button", label: "L1", x: 16, y: 8, size: 14, aspect: 0.45, opacity: 1, shape: "pill",
         map: { code: "BTN_TL" }, behavior: "press" },
@@ -154,16 +154,16 @@ export function xboxLayout(name = "xbox") {
     controls: [
       { id: uid(), type: "stick", label: "", x: 20, y: 32, size: 26, aspect: 1, opacity: 1,
         map: { x: "ABS_X", y: "ABS_Y" }, mode: "floating", deadzone: 12, invertY: false },
-      { id: uid(), type: "dpad", label: "", x: 33, y: 68, size: 22, aspect: 1, opacity: 1,
+      { id: uid(), type: "dpad", label: "", x: 33, y: 68, size: 22, aspect: 1, opacity: 1, shape: "cookie",
         map: { x: "ABS_HAT0X", y: "ABS_HAT0Y" }, deadzone: 0, invertY: false },
       /* Xbox diamond: Y top, B right, A bottom, X left */
-      { id: uid(), type: "button", label: "Y", x: 80, y: 22, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "Y", x: 80, y: 22, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_WEST" }, behavior: "press" },
-      { id: uid(), type: "button", label: "B", x: 88, y: 34, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "B", x: 88, y: 34, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_EAST" }, behavior: "press" },
-      { id: uid(), type: "button", label: "A", x: 80, y: 46, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "A", x: 80, y: 46, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_SOUTH" }, behavior: "press" },
-      { id: uid(), type: "button", label: "X", x: 72, y: 34, size: 13, aspect: 1, opacity: 1, shape: "squircle",
+      { id: uid(), type: "button", label: "X", x: 72, y: 34, size: 13, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_NORTH" }, behavior: "press" },
       { id: uid(), type: "stick", label: "", x: 67, y: 68, size: 26, aspect: 1, opacity: 1,
         map: { x: "ABS_RX", y: "ABS_RY" }, mode: "fixed", deadzone: 12, invertY: false },
@@ -193,19 +193,19 @@ export function retroLayout(name = "retro") {
     version: LAYOUT_VERSION,
     name,
     controls: [
-      { id: uid(), type: "dpad", label: "", x: 22, y: 52, size: 30, aspect: 1, opacity: 1,
+      { id: uid(), type: "dpad", label: "", x: 22, y: 52, size: 30, aspect: 1, opacity: 1, shape: "cookie",
         map: { x: "ABS_HAT0X", y: "ABS_HAT0Y" }, deadzone: 0, invertY: false },
       { id: uid(), type: "button", label: "L", x: 18, y: 10, size: 16, aspect: 0.45, opacity: 1, shape: "pill",
         map: { code: "BTN_TL" }, behavior: "press" },
       { id: uid(), type: "button", label: "R", x: 82, y: 10, size: 16, aspect: 0.45, opacity: 1, shape: "pill",
         map: { code: "BTN_TR" }, behavior: "press" },
-      { id: uid(), type: "button", label: "X", x: 80, y: 36, size: 14, aspect: 1, opacity: 1, shape: "circle",
+      { id: uid(), type: "button", label: "X", x: 80, y: 36, size: 14, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_WEST" }, behavior: "press" },
-      { id: uid(), type: "button", label: "A", x: 88, y: 52, size: 14, aspect: 1, opacity: 1, shape: "circle",
+      { id: uid(), type: "button", label: "A", x: 88, y: 52, size: 14, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_EAST" }, behavior: "press" },
-      { id: uid(), type: "button", label: "B", x: 80, y: 68, size: 14, aspect: 1, opacity: 1, shape: "circle",
+      { id: uid(), type: "button", label: "B", x: 80, y: 68, size: 14, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_SOUTH" }, behavior: "press" },
-      { id: uid(), type: "button", label: "Y", x: 72, y: 52, size: 14, aspect: 1, opacity: 1, shape: "circle",
+      { id: uid(), type: "button", label: "Y", x: 72, y: 52, size: 14, aspect: 1, opacity: 1, shape: "cookie",
         map: { code: "BTN_NORTH" }, behavior: "press" },
       { id: uid(), type: "button", label: "−", x: 42, y: 62, size: 11, aspect: 0.45, opacity: 1, shape: "pill",
         map: { code: "BTN_SELECT" }, behavior: "press" },
@@ -274,7 +274,7 @@ export const PRESETS = {
 };
 
 export function defaultLayout() {
-  return expressiveLayout("expressive");
+  return nintendoLayout("default");
 }
 
 function num(value, lo, hi, fallback) {

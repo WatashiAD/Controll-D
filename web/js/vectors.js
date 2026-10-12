@@ -24,6 +24,10 @@ export const SHAPE_ICONS = {
   "options": `<svg viewBox="0 0 24 24" width="50%" height="50%" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="7" x2="19" y2="7"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="17" x2="19" y2="17"/></svg>`,
   "view": `<svg viewBox="0 0 24 24" width="50%" height="50%" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="10" height="10" rx="1.5"/><rect x="10" y="10" width="10" height="10" rx="1.5"/></svg>`,
   "menu": `<svg viewBox="0 0 24 24" width="50%" height="50%" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="7" x2="19" y2="7"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="17" x2="19" y2="17"/></svg>`,
+  "OPTIONS": `<svg viewBox="0 0 24 24" width="50%" height="50%" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="7" x2="19" y2="7"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="17" x2="19" y2="17"/></svg>`,
+  "SHARE": `<svg viewBox="0 0 24 24" width="50%" height="50%" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="10" height="10" rx="1.5"/><rect x="10" y="10" width="10" height="10" rx="1.5"/></svg>`,
+  "VIEW": `<svg viewBox="0 0 24 24" width="50%" height="50%" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="10" height="10" rx="1.5"/><rect x="10" y="10" width="10" height="10" rx="1.5"/></svg>`,
+  "MENU": `<svg viewBox="0 0 24 24" width="50%" height="50%" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="7" x2="19" y2="7"/><line x1="5" y1="12" x2="19" y2="12"/><line x1="5" y1="17" x2="19" y2="17"/></svg>`,
 };
 
 export const DPAD_ARROWS = {
@@ -36,6 +40,7 @@ export const DPAD_ARROWS = {
 export const FLOWER_PATH = "M 50.00 2.00 C 55.58 2.00, 59.01 10.65, 65.23 13.23 C 71.45 15.81, 79.99 12.11, 83.94 16.06 C 87.89 20.01, 84.19 28.55, 86.77 34.77 C 89.35 40.99, 98.00 44.42, 98.00 50.00 C 98.00 55.58, 89.35 59.01, 86.77 65.23 C 84.19 71.45, 87.89 79.99, 83.94 83.94 C 79.99 87.89, 71.45 84.19, 65.23 86.77 C 59.01 89.35, 55.58 98.00, 50.00 98.00 C 44.42 98.00, 40.99 89.35, 34.77 86.77 C 28.55 84.19, 20.01 87.89, 16.06 83.94 C 12.11 79.99, 15.81 71.45, 13.23 65.23 C 10.65 59.01, 2.00 55.58, 2.00 50.00 C 2.00 44.42, 10.65 40.99, 13.23 34.77 C 15.81 28.55, 12.11 20.01, 16.06 16.06 C 20.01 12.11, 28.55 15.81, 34.77 13.23 C 40.99 10.65, 44.42 2.00, 50.00 2.00 Z";
 
 export const CLOVER_PATH = "M 25 25 C 29 14, 38 1, 50 1 C 62 1, 71 14, 75 25 C 86 29, 99 38, 99 50 C 99 62, 86 71, 75 75 C 71 86, 62 99, 50 99 C 38 99, 29 86, 25 75 C 14 71, 1 62, 1 50 C 1 38, 14 29, 25 25 Z";
+export const COOKIE_PATH = CLOVER_PATH;
 
 export function createShapeSvg(path, className) {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");

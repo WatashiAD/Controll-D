@@ -2,6 +2,7 @@
 
 import { BUTTON_CODES, shortButtonLabel } from "./codes.js";
 import { toggleFullscreen, isFullscreen } from "./screen.js";
+import { computeSnap, renderGuides, clearGuides } from "./snapping.js";
 
 /* Local (non-gamepad) actions a control can trigger. */
 import {
@@ -14,12 +15,13 @@ import {
   DPAD_ARROWS,
   FLOWER_PATH,
   CLOVER_PATH,
+  COOKIE_PATH,
   createShapeSvg,
   clamp,
   applyDeadzone,
 } from "./vectors.js";
 
-export { ACTION_OPTIONS, ACTION_SET, FLOWER_PATH, CLOVER_PATH, SHAPE_ICONS };
+export { ACTION_OPTIONS, ACTION_SET, FLOWER_PATH, CLOVER_PATH, COOKIE_PATH, SHAPE_ICONS };
 
 class BaseControl {
   constructor(data, stage) {
@@ -99,13 +101,18 @@ class BaseControl {
     el.style.transform = "translate(-50%, -50%)";
     el.style.opacity = String(this.data.opacity ?? 1);
     el.style.setProperty("--r", `${Math.min(w, h) * (this.data.type === "dpad" ? 0.28 : 0.5)}px`);
-    el.style.setProperty("--fs", `${clamp(w * 0.26, 9, 22)}px`);
-    const defaultShape = (this.data.aspect && this.data.aspect < 0.75) ? "pill" : "squircle";
+    let fs = clamp(w * 0.26, 9, 22);
+    const labelKey = this.data.label || "";
+    if (labelKey.length > 3) {
+      fs = clamp(fs * (3.5 / labelKey.length), 7, 14);
+    }
+    el.style.setProperty("--fs", `${fs}px`);
+    const defaultShape = (this.data.aspect && this.data.aspect < 0.75) ? "pill" : "cookie";
     el.dataset.shape = this.data.shape || defaultShape;
 
-    const labelKey = this.data.label || "";
-    if (SHAPE_ICONS[labelKey]) {
-      this.label.innerHTML = SHAPE_ICONS[labelKey];
+    const iconHtml = SHAPE_ICONS[labelKey] || SHAPE_ICONS[labelKey.toUpperCase()] || SHAPE_ICONS[labelKey.toLowerCase()];
+    if (iconHtml) {
+      this.label.innerHTML = iconHtml;
       this.label.hidden = false;
     } else {
       this.label.textContent = labelKey;
@@ -131,6 +138,12 @@ class BaseControl {
 }
 
 class ButtonControl extends BaseControl {
+  constructor(data, stage) {
+    super(data, stage);
+    this.cookieSvg = createShapeSvg(COOKIE_PATH, "face-cookie");
+    this.face.appendChild(this.cookieSvg);
+  }
+
   onPress() {
     const { transport, haptics } = this.stage.ctx;
     haptics.tap();
@@ -641,6 +654,7 @@ export class Stage {
     if (!on) {
       this.select(null);
       this.setGrid(false);
+      clearGuides(document.getElementById("snap-guides-layer"));
     }
   }
 
@@ -688,6 +702,7 @@ export class Stage {
         id: impl.data.id,
         dx: (e.clientX - stageRect.left) / stageRect.width * 100 - impl.data.x,
         dy: (e.clientY - stageRect.top) / stageRect.height * 100 - impl.data.y,
+        didSnap: false,
       };
       this.el.setPointerCapture(e.pointerId);
       e.preventDefault();
@@ -705,10 +720,31 @@ export class Stage {
     const stageRect = this.rect();
 
     if (g.kind === "move") {
-      const x = this._snap((e.clientX - stageRect.left) / stageRect.width * 100 - g.dx);
-      const y = this._snap((e.clientY - stageRect.top) / stageRect.height * 100 - g.dy);
-      impl.data.x = clamp(x, 0, 100);
-      impl.data.y = clamp(y, 0, 100);
+      const rawX = (e.clientX - stageRect.left) / stageRect.width * 100 - g.dx;
+      const rawY = (e.clientY - stageRect.top) / stageRect.height * 100 - g.dy;
+      const cfg = typeof this.ctx?.settings === "function" ? this.ctx.settings() : this.ctx?.settings;
+      const snapLayer = document.getElementById("snap-guides-layer");
+      const snapResult = computeSnap(
+        { x: rawX, y: rawY, size: impl.data.size, aspect: impl.data.aspect },
+        this.controls.filter((c) => c.data.id !== impl.data.id).map((c) => c.data),
+        stageRect,
+        {
+          enabled: cfg ? cfg.snapEnabled !== false : true,
+          gridStep: cfg ? cfg.snapGridStep || 2.5 : 2.5,
+          useGrid: this.gridOn,
+        }
+      );
+
+      if ((snapResult.snappedX || snapResult.snappedY) && !g.didSnap) {
+        if (this.ctx?.haptics?.tap) this.ctx.haptics.tap();
+        g.didSnap = true;
+      } else if (!snapResult.snappedX && !snapResult.snappedY) {
+        g.didSnap = false;
+      }
+
+      renderGuides(snapLayer, snapResult.guides);
+      impl.data.x = clamp(snapResult.x, 0, 100);
+      impl.data.y = clamp(snapResult.y, 0, 100);
     } else {
       const cx = stageRect.left + (impl.data.x / 100) * stageRect.width;
       const cy = stageRect.top + (impl.data.y / 100) * stageRect.height;
@@ -724,6 +760,7 @@ export class Stage {
   _editUp(e) {
     if (!this._editGesture) return;
     this._editGesture = null;
+    clearGuides(document.getElementById("snap-guides-layer"));
     try {
       this.el.releasePointerCapture(e.pointerId);
     } catch {
