@@ -9,6 +9,7 @@ import { autoFullscreen, isFullscreen, toggleFullscreen } from "./screen.js";
 import { Stage } from "./controls.js";
 import { defaultLayout, sanitizeLayout, listLayouts, LAYOUT_VERSION, PRESET_TITLES, applyButtonStyleToLayout, BUTTON_STYLES } from "./layout.js";
 import { Editor } from "./editor.js";
+import { ColorPicker } from "./color-picker.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -255,32 +256,36 @@ if (buttonStyleSelect) {
   });
 }
 
-/* theme colors (Primary & Secondary) */
-const colorPrimaryInput = $("color-primary-input");
-const colorSecondaryInput = $("color-secondary-input");
-const btnResetColors = $("btn-reset-colors");
+/* settings tabs navigation */
+const settingsTabs = $("settings-tabs");
+const settingsPanels = [
+  $("panel-controls"),
+  $("panel-input"),
+  $("panel-about"),
+];
 
-if (colorPrimaryInput && colorSecondaryInput) {
-  colorPrimaryInput.value = settings.colorPrimary || DEFAULT_PRIMARY;
-  colorSecondaryInput.value = settings.colorSecondary || DEFAULT_SECONDARY;
-
-  const updateColors = () => {
-    settings.colorPrimary = colorPrimaryInput.value;
-    settings.colorSecondary = colorSecondaryInput.value;
-    saveSettings(settings);
-    applyColors(settings.colorPrimary, settings.colorSecondary);
-  };
-
-  colorPrimaryInput.addEventListener("input", updateColors);
-  colorSecondaryInput.addEventListener("input", updateColors);
-
-  if (btnResetColors) {
-    btnResetColors.addEventListener("click", () => {
-      colorPrimaryInput.value = DEFAULT_PRIMARY;
-      colorSecondaryInput.value = DEFAULT_SECONDARY;
-      updateColors();
+if (settingsTabs) {
+  settingsTabs.addEventListener("change", () => {
+    const activeIdx = Number(settingsTabs.activeTabIndex) || 0;
+    settingsPanels.forEach((p, idx) => {
+      if (p) p.hidden = idx !== activeIdx;
     });
-  }
+  });
+}
+
+/* custom in-app color picker */
+const cpRoot = $("custom-color-picker-root");
+if (cpRoot) {
+  new ColorPicker(cpRoot, {
+    initialPrimary: settings.colorPrimary || DEFAULT_PRIMARY,
+    initialSecondary: settings.colorSecondary || DEFAULT_SECONDARY,
+    onChange: ({ primary, secondary }) => {
+      settings.colorPrimary = primary;
+      settings.colorSecondary = secondary;
+      saveSettings(settings);
+      applyColors(primary, secondary);
+    },
+  });
 }
 
 /* options (md-switch / md-slider) */
@@ -298,6 +303,7 @@ function bindSwitch(id, key, after) {
 bindSwitch("opt-haptics", "haptics", () => haptics.configure(settings));
 bindSwitch("opt-rumble", "rumble", () => haptics.configure(settings));
 bindSwitch("opt-autofs", "autoFullscreen");
+bindSwitch("opt-telemetry", "telemetry");
 bindSwitch("opt-show-rtt", "showRtt", () => {
   $("rtt-pill").hidden = !settings.showRtt;
 });

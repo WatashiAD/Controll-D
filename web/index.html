@@ -62,27 +62,37 @@
 
   <!-- Settings dialog (@material/web) -->
   <md-dialog id="settings-modal">
-    <div slot="headline">Settings</div>
-    <div slot="content" class="settings-grid">
-      <div class="settings-col">
-        <section>
-          <h3>Theme Colors</h3>
-          <label class="field row">
-            <span>Primary (Buttons)</span>
-            <input type="color" id="color-primary-input" value="#655095">
-          </label>
-          <label class="field row">
-            <span>Secondary (Labels & Knobs)</span>
-            <input type="color" id="color-secondary-input" value="#d0bcff">
-          </label>
-          <div class="field row" style="justify-content: flex-end; margin-top: 4px;">
-            <md-text-button id="btn-reset-colors">Reset</md-text-button>
-          </div>
-        </section>
+    <div slot="headline" class="settings-header">
+      <div class="settings-title-group">
+        <span>Settings</span>
+        <span class="settings-badge">v1.0 Preview</span>
+      </div>
+    </div>
 
-        <section>
-          <h3>Controller Style</h3>
-          <div class="field row">
+    <div slot="content" class="settings-body">
+      <!-- Material 3 Navigation Tabs -->
+      <md-tabs id="settings-tabs">
+        <md-primary-tab id="tab-btn-controls">
+          <svg slot="icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+          Controls & Style
+        </md-primary-tab>
+        <md-primary-tab id="tab-btn-input">
+          <svg slot="icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+          Input & Feel
+        </md-primary-tab>
+        <md-primary-tab id="tab-btn-help">
+          <svg slot="icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          Help & About
+        </md-primary-tab>
+      </md-tabs>
+
+      <!-- Panel 1: Controls & Style -->
+      <div id="panel-controls" class="settings-panel">
+        <section class="settings-card">
+          <div class="card-head">
+            <h3>Controller Layout & Style</h3>
+          </div>
+          <div class="field">
             <span>Button Glyphs</span>
             <md-outlined-select id="settings-button-style" aria-label="Button Glyphs">
               <md-select-option value="xbox"><div slot="headline">Xbox (A / B / X / Y)</div></md-select-option>
@@ -90,68 +100,162 @@
               <md-select-option value="nintendo"><div slot="headline">Nintendo Switch (A / B / X / Y)</div></md-select-option>
             </md-outlined-select>
           </div>
+          <div class="field">
+            <span>Layout Preset</span>
+            <md-outlined-select id="settings-preset-select" aria-label="Layout preset"></md-outlined-select>
+          </div>
+          <div class="card-row" style="margin-top: 14px;">
+            <div class="card-row-info">
+              <strong>Visual Editor</strong>
+              <small>Drag, scale, or reposition buttons and sticks</small>
+            </div>
+            <md-filled-button id="btn-edit-settings">Customize Layout</md-filled-button>
+          </div>
         </section>
 
-        <section>
-          <h3>Vibration</h3>
-          <div class="field row">
-            <span>Touch feedback</span>
-            <md-switch id="opt-haptics" aria-label="Touch feedback"></md-switch>
+        <section class="settings-card">
+          <div class="card-head">
+            <h3>Theme Colors</h3>
+          </div>
+          <!-- In-App Custom Color Picker Component -->
+          <div id="custom-color-picker-root"></div>
+        </section>
+      </div>
+
+      <!-- Panel 2: Input & Feel -->
+      <div id="panel-input" class="settings-panel" hidden>
+        <section class="settings-card">
+          <div class="card-head">
+            <h3>Vibration & Haptics</h3>
           </div>
           <div class="field row">
-            <span>Strength</span>
+            <div class="card-row-info">
+              <strong>Touch Feedback</strong>
+              <small>Micro-vibration tap on button presses</small>
+            </div>
+            <md-switch id="opt-haptics" aria-label="Touch feedback"></md-switch>
+          </div>
+          <div class="field">
+            <span>Vibration Strength</span>
             <md-slider id="opt-haptics-strength" min="0" max="100" step="1" value="70" labeled aria-label="Haptic strength"></md-slider>
           </div>
           <div class="field row">
-            <span>Game rumble</span>
+            <div class="card-row-info">
+              <strong>Game Rumble</strong>
+              <small>Forward force-feedback from games/emulators to phone</small>
+            </div>
             <md-switch id="opt-rumble" aria-label="Game rumble"></md-switch>
+          </div>
+        </section>
+
+        <section class="settings-card">
+          <div class="card-head">
+            <h3>Input & Screen</h3>
+          </div>
+          <div class="field">
+            <span>Global Deadzone</span>
+            <md-slider id="opt-deadzone" min="0" max="40" step="1" value="10" labeled aria-label="Global deadzone"></md-slider>
+          </div>
+          <div class="field row">
+            <div class="card-row-info">
+              <strong>Latency Monitor (HUD)</strong>
+              <small>Display real-time round-trip latency (RTT)</small>
+            </div>
+            <md-switch id="opt-show-rtt" aria-label="Show latency"></md-switch>
+          </div>
+          <div class="field row">
+            <div class="card-row-info">
+              <strong>Auto Fullscreen</strong>
+              <small>Re-engage immersive fullscreen mode on tap</small>
+            </div>
+            <md-switch id="opt-autofs" aria-label="Auto fullscreen on tap"></md-switch>
           </div>
         </section>
       </div>
 
-      <div class="settings-col">
-        <section>
-          <h3>Input</h3>
-          <div class="field row">
-            <span>Show latency</span>
-            <md-switch id="opt-show-rtt" aria-label="Show latency"></md-switch>
+      <!-- Panel 3: Help & About -->
+      <div id="panel-about" class="settings-panel" hidden>
+        <!-- In Development Notice -->
+        <section class="settings-card dev-notice-card">
+          <div class="dev-notice-header">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#ffd166" aria-hidden="true"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+            <strong>Active Development Notice</strong>
           </div>
-          <div class="field row">
-            <span>Global deadzone</span>
-            <md-slider id="opt-deadzone" min="0" max="40" step="1" value="10" labeled aria-label="Global deadzone"></md-slider>
-          </div>
-          <div class="field row">
-            <span>Auto fullscreen on tap</span>
-            <md-switch id="opt-autofs" aria-label="Auto fullscreen on tap"></md-switch>
-          </div>
+          <p class="dev-notice-text">
+            Cotrll-D is currently in active development (v1.0 Preview). Layouts, joydev mappings, and rumble protocol are actively being refined. Feedback and contributions are welcome on GitHub!
+          </p>
         </section>
 
-        <section>
-          <h3>Layout</h3>
-          <div class="field row">
-            <span>Preset</span>
-            <md-outlined-select id="settings-preset-select" aria-label="Layout preset">
-            </md-outlined-select>
+        <!-- Connection & Live Telemetry -->
+        <section class="settings-card">
+          <div class="card-head">
+            <h3>Connection & Live Stats</h3>
           </div>
-          <div class="conn-info" style="margin-top: 8px;">
-            <span>Customise / move</span>
-            <md-filled-button id="btn-edit-settings">Edit</md-filled-button>
-          </div>
-        </section>
-
-        <section>
-          <h3>Connection</h3>
-          <div class="conn-info">
-            <span id="conn-host">—</span>
+          <div class="card-row">
+            <div class="card-row-info">
+              <strong>Host Server</strong>
+              <small id="conn-host">—</small>
+            </div>
             <md-outlined-button id="btn-disconnect">Reconnect</md-outlined-button>
           </div>
+          <div class="field row" style="margin-top: 14px;">
+            <div class="card-row-info">
+              <strong>Live Community Tracking</strong>
+              <small>Sends anonymous heartbeat to <code class="code-tag">watashiad.vercel.app/controll-d</code> to show live active player count</small>
+            </div>
+            <md-switch id="opt-telemetry" aria-label="Anonymous telemetry"></md-switch>
+          </div>
+        </section>
+
+        <!-- Troubleshooting Guide -->
+        <section class="settings-card troubleshooting-card">
+          <div class="card-head">
+            <h3>Troubleshooting Guide</h3>
+          </div>
+          <details class="faq-item" open>
+            <summary>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4z"/></svg>
+              Phone can't connect or URL won't open
+            </summary>
+            <p>1. Ensure both your PC and phone are connected to the exact same Wi-Fi network.<br>
+               2. Check firewall: verify port <code>8765</code> is open (<code>sudo ufw allow 8765/tcp</code> on Linux).<br>
+               3. AP Isolation: some guest Wi-Fi networks block device-to-device communication. Disable AP Isolation on your router.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+              Game or emulator doesn't see the controller
+            </summary>
+            <p>1. Cotrll-D creates a virtual Xbox 360 controller via <code>/dev/uinput</code>.<br>
+               2. In emulators (Eden, Yuzu, Ryujinx, RPCS3, Dolphin), go to Controller Settings and select <strong>Xbox 360 Controller (Cotrll-D)</strong>.<br>
+               3. On Linux, ensure your user account has read/write permissions to <code>/dev/uinput</code>.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+              High latency or laggy input
+            </summary>
+            <p>1. Connect your PC to your router with an Ethernet cable for lowest latency.<br>
+               2. Connect your phone to a 5GHz Wi-Fi band instead of congested 2.4GHz.<br>
+               3. Keep your phone in clear line-of-sight with your Wi-Fi router.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+              No vibration on iPhone / iOS Safari
+            </summary>
+            <p>Apple Safari on iOS does not support the Web Vibration API due to operating system restrictions. Haptic vibration works out of the box on Android Chrome, Firefox, and Chromium browsers.</p>
+          </details>
         </section>
       </div>
     </div>
 
-    <div slot="actions" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-      <span style="font-size: 11px; opacity: 0.5; margin-left: 12px;">Cotrll-D v1.0</span>
-      <md-text-button id="settings-close">Close</md-text-button>
+    <div slot="actions" class="settings-footer">
+      <span class="settings-footer-version">Cotrll-D · v1.0 Preview</span>
+      <md-filled-button id="settings-close">Done</md-filled-button>
     </div>
   </md-dialog>
 

@@ -14,6 +14,7 @@ export const DEFAULT_SETTINGS = {
   deadzone: 10,          // global deadzone percent
   autoFullscreen: true,  // re-enter fullscreen on every tap
   layoutName: "expressive",
+  telemetry: true,       // anonymous live community tracking
 };
 
 function readJSON(key, fallback) {

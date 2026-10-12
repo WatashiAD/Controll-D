@@ -11,6 +11,7 @@ import { WebSocketServer } from "ws";
 import { loadConfig } from "./config.mjs";
 import { GamepadError, VirtualGamepad } from "./gamepad.mjs";
 import { RateLimiter, parseMessage } from "./protocol.mjs";
+import { TelemetryReporter } from "./telemetry.mjs";
 import QRCode from "qrcode";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -57,7 +58,7 @@ async function serveFile(res, path) {
 }
 
 export function createState(cfg) {
-  return { cfg, pad: null, active: null };
+  return { cfg, pad: null, active: null, telemetry: new TelemetryReporter(cfg) };
 }
 
 function clientIp(req) {
@@ -85,6 +86,7 @@ export function createServerFromState(state) {
           version: "1.0.0",
           pad: state.pad !== null,
           clients: state.active ? 1 : 0,
+          telemetry: !!state.telemetry?.enabled,
         });
         return;
       }
@@ -161,6 +163,7 @@ function activateSession(state, session) {
   state.active = session;
   session.authed = true;
   session.ws.send(JSON.stringify({ t: "ok", pad: state.pad !== null }));
+  state.telemetry?.notifySessionChange();
   console.log(`Session activated (pad=${state.pad !== null})`);
 }
 
@@ -241,6 +244,7 @@ function handleSocket(state, ws, req) {
     if (state.active === session) {
       state.active = null;
       if (state.pad) state.pad.reset();
+      state.telemetry?.notifySessionChange();
     }
     console.log(`WS disconnected from ${ip}`);
   };
@@ -285,7 +289,6 @@ export async function main() {
         /* ignore */
       }
     });
-    console.log(`Virtual gamepad ready: ${cfg.gamepadName}`);
   } catch (err) {
     if (err instanceof GamepadError) console.error(`${err.message}`);
     else console.error(`${err?.message || err}`);
@@ -299,24 +302,31 @@ export async function main() {
   console.log("");
   console.log("  🎮 Cotrll-D v1.0 — Wireless Virtual Gamepad");
   console.log("  ───────────────────────────────────────────");
+  console.log(`  Gamepad   : ${state.pad ? `Active (${cfg.gamepadName})` : "Virtual pad disabled"}`);
+  console.log(`  Phone URL : ${phoneUrl}`);
+  console.log(`  Local URL : http://127.0.0.1:${cfg.port}/`);
+  if (cfg.host !== "127.0.0.1" && cfg.host !== "localhost") {
+    console.log("  Network   : Bound to 0.0.0.0 (all interfaces)");
+  }
+  if (state.telemetry?.enabled) {
+    console.log("  Telemetry : Anonymous live tracker active");
+  }
+  console.log("");
+
+  server.listen(cfg.port, cfg.host);
+  state.telemetry.start(state);
+
   try {
     const qr = await QRCode.toString(phoneUrl, { type: "terminal", small: true });
     console.log("  📱 Scan with your phone to start gaming:\n");
     console.log(qr.split("\n").map((l) => "    " + l).join("\n"));
+    console.log("");
   } catch {
     /* ignore qr generation failure */
   }
-  console.log(`  Phone URL : ${phoneUrl}`);
-  console.log(`  Local URL : http://127.0.0.1:${cfg.port}/`);
-  console.log("");
-  if (cfg.host !== "127.0.0.1" && cfg.host !== "localhost") {
-    console.log("  Note: bound to all interfaces. Set host=127.0.0.1 in config.json");
-    console.log("        if you only need localhost.");
-    console.log("");
-  }
-  server.listen(cfg.port, cfg.host);
 
   const shutdown = () => {
+    state.telemetry?.stop();
     if (state.pad) state.pad.close();
     server.close(() => process.exit(0));
     setTimeout(() => process.exit(0), 1000).unref();
