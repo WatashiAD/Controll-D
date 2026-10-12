@@ -217,7 +217,7 @@ export function retroLayout(name = "retro") {
   };
 }
 
-/* Material 3 Expressive layout: exact Figma design coordinates & components */
+/* Expressive layout: exact Figma design coordinates & components */
 export function expressiveLayout(name = "expressive") {
   return {
     version: LAYOUT_VERSION,
@@ -256,8 +256,8 @@ export function expressiveLayout(name = "expressive") {
 }
 
 export const PRESET_TITLES = {
-  expressive: "M3 Expressive (Default)",
-  default: "M3 Expressive",
+  expressive: "Expressive (Default)",
+  default: "Expressive",
   nintendo: "Nintendo Switch",
   playstation: "PlayStation (Shapes)",
   xbox: "Xbox Wireless",

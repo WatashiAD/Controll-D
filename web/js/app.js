@@ -44,7 +44,7 @@ const app = {
   exitEditor,
 };
 
-/* ---------------- banner (M3 Expressive toast) ---------------- */
+/* ---------------- banner (toast notification) ---------------- */
 
 let bannerTimer = null;
 function banner(text, ms = 2600) {

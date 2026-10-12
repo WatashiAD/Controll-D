@@ -11,7 +11,7 @@ export const BUILTIN_SKINS = [
   {
     id: "expressive",
     name: "Material Expressive",
-    author: "Google M3",
+    author: "Controll-D",
     colors: { primary: "#655095", secondary: "#d0bcff", bg: "#383838" },
     buttonStyle: "xbox",
     shape: "cookie",

@@ -130,11 +130,9 @@
 
 .ctrl.active .face {
   background: var(--ctrl-active);
-  border: 2px solid var(--accent);
+  border-color: var(--accent);
   border-radius: var(--m3-radius-active);
   transform: scale(0.92);
-  outline: 2.5px solid var(--accent);
-  outline-offset: 2px;
   box-shadow: none;
 }
 
@@ -206,8 +204,6 @@
 
 .ctrl.stick.active .knob {
   border-color: var(--accent);
-  outline: 2.5px solid var(--accent);
-  outline-offset: 2px;
   box-shadow: none;
 }
 
@@ -354,8 +350,6 @@
   border: none;
   border-radius: 50%;
   transform: scale(0.92);
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
   box-shadow: none;
   color: var(--ctrl-text);
 }
@@ -365,8 +359,6 @@
   border: none;
   border-radius: 50%;
   transform: scale(0.92);
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
   box-shadow: none;
   color: var(--ctrl-text);
 }
@@ -449,8 +441,6 @@
 
 .ctrl.cluster .cluster-btn.active {
   background: rgba(208, 188, 255, 0.32);
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
   transform: scale(0.92);
 }
 
@@ -490,19 +480,17 @@
   border-color: var(--accent);
   border-radius: 50%;
   transform: scale(0.92);
-  outline: 2.5px solid var(--accent);
-  outline-offset: 2px;
   box-shadow: none;
 }
 
-/* Glyph & shape active outline (PlayStation shapes & icons) */
+/* Glyph & shape active color (PlayStation shapes & icons) */
 .ctrl[data-glyph="triangle"].active .face,
-.ctrl[data-shape="triangle"].active .face { border-color: #2ed573; outline: 2.5px solid #2ed573; outline-offset: 2px; box-shadow: none; }
-.ctrl[data-glyph="circle"].active .face   { border-color: #ff4757; outline: 2.5px solid #ff4757; outline-offset: 2px; box-shadow: none; }
+.ctrl[data-shape="triangle"].active .face { border-color: #2ed573; box-shadow: none; }
+.ctrl[data-glyph="circle"].active .face   { border-color: #ff4757; box-shadow: none; }
 .ctrl[data-glyph="cross"].active .face,
-.ctrl[data-shape="cross"].active .face    { border-color: #1e90ff; outline: 2.5px solid #1e90ff; outline-offset: 2px; box-shadow: none; }
+.ctrl[data-shape="cross"].active .face    { border-color: #1e90ff; box-shadow: none; }
 .ctrl[data-glyph="square"].active .face,
-.ctrl[data-shape="square"].active .face   { border-color: #e056fd; outline: 2.5px solid #e056fd; outline-offset: 2px; box-shadow: none; }
+.ctrl[data-shape="square"].active .face   { border-color: #e056fd; box-shadow: none; }
 
 /* ---------------- trigger (vertical slider) ---------------- */
 
@@ -526,8 +514,6 @@
 .ctrl.trigger.active .face {
   border-radius: 12px;
   transform: none;
-  outline: 2.5px solid var(--accent);
-  outline-offset: 2px;
   box-shadow: none;
 }
 
@@ -537,8 +523,6 @@
   border-color: var(--accent);
   border-radius: var(--m3-radius-active);
   transform: scale(0.92);
-  outline: 2.5px solid var(--accent);
-  outline-offset: 2px;
   box-shadow: none;
 }
 
