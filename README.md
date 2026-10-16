@@ -4,6 +4,9 @@ Turn your smartphone or tablet into a fully customizable, low-latency wireless g
 
 No apps to download on your phone — just scan the terminal QR code or open the link in any mobile browser (iOS Safari, Android Chrome).
 
+> [!NOTE]
+> **Beta / Development Phase**: Controll-D is currently tested and verified on **Linux only**. It may or may not work on other operating systems (Windows / macOS) yet, but you are welcome to try it out, report feedback, or contribute to help improve it!
+
 ---
 
 ## ⚡ Instant Install (1 Command)
