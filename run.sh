@@ -1,5 +1,5 @@
 #!/bin/bash
-# Start the Cotrll-D controller server (Node.js).
+# Start the Controll-D controller server (Node.js).
 # Config precedence: environment > config.json > defaults.
 set -e
 cd "$(dirname "$0")"

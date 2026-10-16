@@ -96,7 +96,7 @@ function absInfos() {
 export class GamepadError extends Error {}
 
 export class VirtualGamepad {
-  constructor(name = "Cotrll-D Virtual Gamepad") {
+  constructor(name = "Controll-D Virtual Gamepad") {
     this.name = name;
     this.fd = -1;
     this.btnState = new Map();
