@@ -1,4 +1,4 @@
-/* Custom in-app color picker for Cotrll-D.
+/* Custom in-app color picker for Controll-D.
  *
  * Avoids native OS color pickers that break fullscreen and feel jarring on mobile.
  * Features curated gaming presets, HSL tuning sliders, hex input, and live preview.

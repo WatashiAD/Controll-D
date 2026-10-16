@@ -10,15 +10,15 @@ No apps to download on your phone — just scan the terminal QR code or open the
 
 ### **Linux & macOS (Terminal)**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/WatashiAD/Cotrll-D/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/WatashiAD/Controll-D/main/install.sh | bash
 ```
 
 ### **Windows (PowerShell)**
 ```powershell
-irm https://raw.githubusercontent.com/WatashiAD/Cotrll-D/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/WatashiAD/Controll-D/main/install.ps1 | iex
 ```
 
-After installation, simply run **`cotrll-d`** from any terminal or open it from your app launcher.
+After installation, simply run **`controll-d`** from any terminal or open it from your app launcher.
 
 ---
 
@@ -26,7 +26,7 @@ After installation, simply run **`cotrll-d`** from any terminal or open it from 
 
 1. **Start the server on your PC**:
    ```bash
-   cotrll-d
+   controll-d
    ```
 2. **Scan the QR code**:
    A compact QR code will appear right in your terminal. Scan it with your phone's camera.
@@ -51,8 +51,8 @@ After installation, simply run **`cotrll-d`** from any terminal or open it from 
 If you prefer to clone and run from source:
 
 ```bash
-git clone https://github.com/WatashiAD/Cotrll-D.git
-cd Cotrll-D
+git clone https://github.com/WatashiAD/Controll-D.git
+cd Controll-D
 npm install
 npm start
 ```

@@ -1,4 +1,4 @@
-/* Cotrll-D server: HTTP (static client) + WebSocket (input stream) + uinput pad. */
+/* Controll-D server: HTTP (static client) + WebSocket (input stream) + uinput pad. */
 
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";

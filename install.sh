@@ -8,8 +8,8 @@ INSTALL_DIR="${HOME}/.local/share/controll-d"
 LEGACY_DIR="${HOME}/.local/share/cotrll-d"
 BIN_DIR="${HOME}/.local/bin"
 DESKTOP_DIR="${HOME}/.local/share/applications"
-REPO_URL="https://github.com/WatashiAD/Cotrll-D.git"
-TARBALL_URL="https://github.com/WatashiAD/Cotrll-D/archive/refs/heads/main.tar.gz"
+REPO_URL="https://github.com/WatashiAD/Controll-D.git"
+TARBALL_URL="https://github.com/WatashiAD/Controll-D/archive/refs/heads/main.tar.gz"
 
 echo "🎮 Installing Controll-D v1.0..."
 

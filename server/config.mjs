@@ -1,4 +1,4 @@
-/* Runtime configuration for the Cotrll-D server.
+/* Runtime configuration for the Controll-D server.
  *
  * Precedence: environment variables > config.json > defaults.
  * No authentication: any client on the network can drive the pad.
@@ -10,7 +10,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const CONFIG_PATH = process.env.COTRLL_CONFIG || resolve(ROOT, "config.json");
+const CONFIG_PATH = process.env.CONTROLL_CONFIG || process.env.COTRLL_CONFIG || resolve(ROOT, "config.json");
 
 const DEFAULTS = {
   host: "0.0.0.0",
