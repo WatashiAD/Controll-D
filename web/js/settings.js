@@ -18,7 +18,6 @@ export const DEFAULT_SETTINGS = {
   deadzone: 10,          // global deadzone percent
   autoFullscreen: true,  // re-enter fullscreen on every tap
   layoutName: "default", // default layout
-  telemetry: true,       // anonymous live community tracking
   snapEnabled: true,     // magnetic alignment snapping
   snapGridStep: 2.5,     // grid snap increment
 };

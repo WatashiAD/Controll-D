@@ -11,7 +11,6 @@ import { WebSocketServer } from "ws";
 import { loadConfig } from "./config.mjs";
 import { GamepadError, VirtualGamepad } from "./gamepad.mjs";
 import { RateLimiter, parseMessage } from "./protocol.mjs";
-import { TelemetryReporter } from "./telemetry.mjs";
 import QRCode from "qrcode";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -58,7 +57,7 @@ async function serveFile(res, path) {
 }
 
 export function createState(cfg) {
-  return { cfg, pad: null, active: null, telemetry: new TelemetryReporter(cfg) };
+  return { cfg, pad: null, active: null };
 }
 
 function clientIp(req) {
@@ -75,28 +74,6 @@ export function createServerFromState(state) {
   const server = createServer(async (req, res) => {
     try {
       const url = new URL(req.url || "/", "http://x");
-      if (url.pathname === "/api/telemetry") {
-        if (req.method === "POST") {
-          let body = "";
-          req.on("data", (chunk) => {
-            body += chunk;
-            if (body.length > 2048) req.destroy();
-          });
-          req.on("end", () => {
-            try {
-              const data = JSON.parse(body || "{}");
-              const enabled = Boolean(data.enabled);
-              state.telemetry.setEnabled(enabled);
-              sendJson(res, 200, { ok: true, telemetry: enabled });
-            } catch {
-              sendJson(res, 400, { error: "bad json" });
-            }
-          });
-          return;
-        }
-        sendJson(res, 200, { telemetry: !!state.telemetry?.enabled });
-        return;
-      }
       if (req.method !== "GET" && req.method !== "HEAD") {
         res.writeHead(405, { "cache-control": "no-store" });
         res.end();
@@ -108,7 +85,6 @@ export function createServerFromState(state) {
           version: "1.0.0",
           pad: state.pad !== null,
           clients: state.active ? 1 : 0,
-          telemetry: !!state.telemetry?.enabled,
         });
         return;
       }
@@ -193,7 +169,6 @@ function activateSession(state, session) {
   state.active = session;
   session.authed = true;
   session.ws.send(JSON.stringify({ t: "ok", pad: state.pad !== null }));
-  state.telemetry?.notifySessionChange();
   console.log(`Session activated (pad=${state.pad !== null})`);
 }
 
@@ -274,7 +249,6 @@ function handleSocket(state, ws, req) {
     if (state.active === session) {
       state.active = null;
       if (state.pad) state.pad.reset();
-      state.telemetry?.notifySessionChange();
     }
     console.log(`WS disconnected from ${ip}`);
   };
@@ -341,8 +315,6 @@ export async function main() {
     server.listen(cfg.port, cfg.host, () => resolve());
   });
 
-  state.telemetry.start(state);
-
   const lan = await lanIp();
   const phoneUrl = `http://${lan}:${cfg.port}/`;
 
@@ -354,11 +326,6 @@ export async function main() {
   console.log(`  Local URL : http://127.0.0.1:${cfg.port}/`);
   if (cfg.host !== "127.0.0.1" && cfg.host !== "localhost") {
     console.log("  Network   : Bound to 0.0.0.0 (all interfaces)");
-  }
-  if (state.telemetry?.enabled) {
-    console.log("  Telemetry : Anonymous live tracker active");
-  } else {
-    console.log("  Telemetry : Disabled");
   }
   console.log("");
 
@@ -372,7 +339,6 @@ export async function main() {
   }
 
   const shutdown = () => {
-    state.telemetry?.stop();
     if (state.pad) state.pad.close();
     server.close(() => process.exit(0));
     setTimeout(() => process.exit(0), 1000).unref();

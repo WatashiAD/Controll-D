@@ -466,21 +466,6 @@ function bindSwitch(id, key, after) {
 bindSwitch("opt-haptics", "haptics", () => haptics.configure(settings));
 bindSwitch("opt-rumble", "rumble", () => haptics.configure(settings));
 bindSwitch("opt-autofs", "autoFullscreen");
-bindSwitch("opt-telemetry", "telemetry", (enabled) => {
-  fetch("/api/telemetry", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ enabled }),
-  }).catch(() => {});
-  banner(enabled ? "Live telemetry enabled" : "Live telemetry turned off");
-});
-if (settings.telemetry !== undefined) {
-  fetch("/api/telemetry", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ enabled: !!settings.telemetry }),
-  }).catch(() => {});
-}
 bindSwitch("opt-show-rtt", "showRtt", () => {
   $("rtt-pill").hidden = !settings.showRtt;
 });

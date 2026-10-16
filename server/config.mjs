@@ -18,8 +18,6 @@ const DEFAULTS = {
   gamepadName: "Controll-D Virtual Gamepad",
   rateLimitPerSec: 800.0,
   rateLimitBurst: 1600.0,
-  telemetry: true,
-  telemetryUrl: "https://watashiad.vercel.app/api/controll-d/heartbeat",
 };
 
 function loadFile() {
@@ -54,12 +52,6 @@ export function loadConfig() {
     ),
     rateLimitBurst: pick(
       ["CONTROLL_RATE_BURST", "COTRLL_RATE_BURST"], "rate_limit_burst", DEFAULTS.rateLimitBurst, Number,
-    ),
-    telemetry: pick(
-      ["CONTROLL_TELEMETRY", "COTRLL_TELEMETRY"], "telemetry", DEFAULTS.telemetry, (v) => v !== false && v !== "false" && v !== "0",
-    ),
-    telemetryUrl: pick(
-      ["CONTROLL_TELEMETRY_URL", "COTRLL_TELEMETRY_URL"], "telemetry_url", DEFAULTS.telemetryUrl, String,
     ),
   };
 }
