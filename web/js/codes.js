@@ -1,18 +1,18 @@
 /* Whitelisted evdev codes exposed to the layout editor.
-   Must stay in sync with server/gamepad.py. */
+   Must stay in sync with server/gamepad.mjs (tools/check-whitelists.mjs). */
 
 export const BUTTON_CODES = [
-  ["BTN_SOUTH", "A / Cross (Bottom)"],
-  ["BTN_EAST", "B / Circle (Right)"],
-  ["BTN_NORTH", "X / Square (Left)"],
-  ["BTN_WEST", "Y / Triangle (Top)"],
-  ["BTN_TL", "LB / L1 / L"],
-  ["BTN_TR", "RB / R1 / R"],
-  ["BTN_TL2", "LT / L2 / ZL"],
-  ["BTN_TR2", "RT / R2 / ZR"],
-  ["BTN_SELECT", "Back / View / Share / −"],
-  ["BTN_START", "Start / Menu / Options / +"],
-  ["BTN_MODE", "Guide / Home / PS"],
+  ["BTN_SOUTH", "A (bottom)"],
+  ["BTN_EAST", "B (right)"],
+  ["BTN_NORTH", "X (left)"],
+  ["BTN_WEST", "Y (top)"],
+  ["BTN_TL", "LB / L"],
+  ["BTN_TR", "RB / R"],
+  ["BTN_TL2", "LT / ZL"],
+  ["BTN_TR2", "RT / ZR"],
+  ["BTN_SELECT", "Back / View / −"],
+  ["BTN_START", "Start / Menu / +"],
+  ["BTN_MODE", "Guide / Home"],
   ["BTN_THUMBL", "L3"],
   ["BTN_THUMBR", "R3"],
 ];

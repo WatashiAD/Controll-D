@@ -56,6 +56,8 @@
   place-items: center;
   touch-action: none;
   z-index: 10;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
   --lbl: var(--ctrl-text);
   --m3-radius: var(--m3-shape-squircle);
   --m3-radius-active: var(--m3-shape-squircle-active);
@@ -130,7 +132,7 @@
 
 .ctrl.active .face {
   background: var(--ctrl-active);
-  border-color: var(--accent);
+  border-color: transparent;
   border-radius: var(--m3-radius-active);
   transform: scale(0.92);
   box-shadow: none;
@@ -177,8 +179,8 @@
 }
 
 .ctrl.stick.active[data-shape="flower"] .well-flower {
-  stroke: var(--accent);
-  stroke-width: 3.5px;
+  stroke: transparent;
+  stroke-width: 0;
   filter: none;
 }
 
@@ -199,7 +201,7 @@
 }
 
 .ctrl.stick.active .well {
-  border-color: rgba(255, 255, 255, 0.25);
+  border-color: transparent;
 }
 
 .ctrl.stick.active .knob {
@@ -261,14 +263,14 @@
 
 .ctrl.dpad.active .face {
   border-radius: 24%;
-  border-color: rgba(255, 255, 255, 0.24);
+  border-color: transparent;
 }
 
 .ctrl.dpad.active[data-shape="cookie"] .face-clover,
 .ctrl.dpad.active[data-shape="cookie"] .face-cookie,
 .ctrl.dpad.active[data-shape="clover"] .face-clover {
-  stroke: var(--accent);
-  stroke-width: 3.5px;
+  stroke: transparent;
+  stroke-width: 0;
   filter: none;
 }
 
@@ -299,8 +301,8 @@
 
 .ctrl.active[data-shape="cookie"] .face-cookie,
 .ctrl.active[data-shape="clover"] .face-cookie {
-  stroke: var(--accent);
-  stroke-width: 3.5px;
+  stroke: transparent;
+  stroke-width: 0;
   filter: none;
   transform: scale(0.93);
 }
@@ -363,38 +365,6 @@
   color: var(--ctrl-text);
 }
 
-/* ---------------- cluster (4-button face group) ---------------- */
-
-.ctrl.cluster {
-  user-select: none;
-}
-
-.ctrl.cluster .face {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-
-.ctrl.cluster .face-clover {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  fill: var(--ctrl-face);
-  stroke: var(--ctrl-edge);
-  stroke-width: 2.2;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.32));
-  transition: fill 60ms linear, stroke 60ms linear;
-}
-
-.ctrl.cluster.active .face-clover {
-  stroke: var(--accent);
-  stroke-width: 3.5px;
-  filter: none;
-}
-
-[data-ctheme="lavender"] .ctrl.cluster:not(.active) .face-clover,
-[data-ctheme="expressive"] .ctrl.cluster:not(.active) .face-clover,
 [data-ctheme="expressive"] .ctrl.dpad:not(.active) .face-clover,
 [data-ctheme="expressive"] .ctrl.stick:not(.active) .well-flower {
   stroke: none;
@@ -420,113 +390,14 @@
   box-shadow: none;
 }
 
-.ctrl.cluster .cluster-btn {
-  position: absolute;
-  width: 34%;
-  height: 34%;
-  display: grid;
-  place-items: center;
-  font-size: var(--fs, 14px);
-  font-weight: 800;
-  color: var(--ctrl-text);
-  pointer-events: none;
-  border-radius: 50%;
-  transition: transform 90ms ease, background 60ms linear;
-}
-
-.ctrl.cluster .cluster-btn.north { top: 3%; left: 33%; }
-.ctrl.cluster .cluster-btn.south { bottom: 3%; left: 33%; }
-.ctrl.cluster .cluster-btn.west  { left: 3%; top: 33%; }
-.ctrl.cluster .cluster-btn.east  { right: 3%; top: 33%; }
-
-.ctrl.cluster .cluster-btn.active {
-  background: rgba(208, 188, 255, 0.32);
-  transform: scale(0.92);
-}
-
-/* ---------------- island container (clover/flower background) ---------------- */
-
-.ctrl.island {
-  pointer-events: none;
-  z-index: 5;
-}
-
-.ctrl.island .face {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-
-.ctrl.island .island-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  fill: var(--ctrl-face);
-  stroke: var(--ctrl-edge);
-  stroke-width: 2.2;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.32));
-}
-
-/* Buttons sitting on top of an island */
-.ctrl[data-shape="island"] .face {
-  background: transparent;
-  border-color: transparent;
-  box-shadow: none;
-}
-
-.ctrl[data-shape="island"].active .face {
-  background: rgba(201, 182, 246, 0.32);
-  border-color: var(--accent);
-  border-radius: 50%;
-  transform: scale(0.92);
-  box-shadow: none;
-}
-
-/* Glyph & shape active color (PlayStation shapes & icons) */
-.ctrl[data-glyph="triangle"].active .face,
-.ctrl[data-shape="triangle"].active .face { border-color: #2ed573; box-shadow: none; }
-.ctrl[data-glyph="circle"].active .face   { border-color: #ff4757; box-shadow: none; }
-.ctrl[data-glyph="cross"].active .face,
-.ctrl[data-shape="cross"].active .face    { border-color: #1e90ff; box-shadow: none; }
-.ctrl[data-glyph="square"].active .face,
-.ctrl[data-shape="square"].active .face   { border-color: #e056fd; box-shadow: none; }
-
-/* ---------------- trigger (vertical slider) ---------------- */
-
-.ctrl.trigger .fill {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 0%;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 70%, transparent), var(--accent));
-  opacity: 0.75;
-  border-radius: 0 0 10px 10px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.ctrl.trigger .face {
-  border-radius: 16px;
-  transition: border-radius 160ms cubic-bezier(0.2, 0, 0, 1), transform 120ms ease, border-color 60ms linear;
-}
-.ctrl.trigger.active .face {
-  border-radius: 12px;
-  transform: none;
-  box-shadow: none;
-}
-
-/* ---------------- action (local buttons, e.g. fullscreen) ---------------- */
+/* (Editor styling extracted to editor.css) */
 
 .ctrl.action.on .face {
-  border-color: var(--accent);
+  border-color: transparent;
   border-radius: var(--m3-radius-active);
   transform: scale(0.92);
   box-shadow: none;
 }
-
-/* (Editor styling extracted to editor.css) */
 
 /* Expressive / Lavender flat mockup styling */
 [data-ctheme="lavender"] #stage::after,
@@ -554,12 +425,6 @@
 
 [data-ctheme="lavender"] .ctrl.dpad[data-shape="clover"]:not(.active) .face-clover,
 [data-ctheme="expressive"] .ctrl.dpad[data-shape="clover"]:not(.active) .face-clover {
-  stroke: none;
-  filter: none;
-}
-
-[data-ctheme="lavender"] .ctrl.island .island-svg,
-[data-ctheme="expressive"] .ctrl.island .island-svg {
   stroke: none;
   filter: none;
 }

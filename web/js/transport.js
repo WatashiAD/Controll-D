@@ -1,6 +1,7 @@
 /* Low-latency WebSocket transport.
    - Buttons flush immediately (single tiny frame)
    - Axes coalesce per animation frame into one batch message
+   - Trackpad motion can bypass the frame queue via sendMouseNow()
    - Heartbeat ping measures RTT for the HUD
    - Auto-reconnect with backoff; sends a neutral-state reset when hidden
 */
@@ -17,6 +18,9 @@ export class Transport extends EventTarget {
     this.rtt = null;
     this._pending = new Map();
     this._raf = 0;
+    this._mouse = { x: 0, y: 0 };
+    this._wheel = { x: 0, y: 0 };
+    this._mouseRaf = 0;
     this._pingTimer = 0;
     this._connectTimer = 0;
     this._retries = 0;
@@ -194,7 +198,62 @@ export class Transport extends EventTarget {
 
   releaseAll() {
     this.sendRaw({ t: "z" });
+    this.sendRaw({ t: "kr" });
     this._pending.clear();
+  }
+
+  /* ---------------- virtual keyboard ---------------- */
+
+  sendKeyName(code, value) {
+    this.sendRaw({ t: "k", c: code, v: value ? 1 : 0 });
+  }
+
+  resetKeys() {
+    this.sendRaw({ t: "kr" });
+  }
+
+  /* ---------------- virtual trackpad/mouse ---------------- */
+
+  sendMouse(dx, dy) {
+    this._mouse.x += Math.trunc(dx);
+    this._mouse.y += Math.trunc(dy);
+    this._scheduleMouseFlush();
+  }
+
+  /* Trackpad pointer samples are already rate-limited by the browser. Send
+     immediately to avoid adding a full animation-frame of perceived drag. */
+  sendMouseNow(dx, dy) {
+    const x = Math.trunc(dx);
+    const y = Math.trunc(dy);
+    if (!x && !y) return false;
+    return this.sendRaw({ t: "mr", x, y });
+  }
+
+  sendMouseButton(code, value) {
+    this.sendRaw({ t: "mb", c: code, v: value ? 1 : 0 });
+  }
+
+  sendWheel(x, y) {
+    this._wheel.x += Math.trunc(x);
+    this._wheel.y += Math.trunc(y);
+    this._scheduleMouseFlush();
+  }
+
+  _scheduleMouseFlush() {
+    if (this._mouseRaf) return;
+    this._mouseRaf = requestAnimationFrame(() => {
+      this._mouseRaf = 0;
+      if (this._mouse.x || this._mouse.y) {
+        this.sendRaw({ t: "mr", x: this._mouse.x, y: this._mouse.y });
+        this._mouse.x = 0;
+        this._mouse.y = 0;
+      }
+      if (this._wheel.x || this._wheel.y) {
+        this.sendRaw({ t: "mw", x: this._wheel.x, y: this._wheel.y });
+        this._wheel.x = 0;
+        this._wheel.y = 0;
+      }
+    });
   }
 
   _scheduleFlush() {
@@ -220,10 +279,21 @@ export class Transport extends EventTarget {
 
   neutralize() {
     this._pending.clear();
+    this._mouse.x = 0;
+    this._mouse.y = 0;
+    this._wheel.x = 0;
+    this._wheel.y = 0;
     if (this._raf) {
       cancelAnimationFrame(this._raf);
       this._raf = 0;
     }
-    this._openSend({ t: "z" });
+    if (this._mouseRaf) {
+      cancelAnimationFrame(this._mouseRaf);
+      this._mouseRaf = 0;
+    }
+    this.sendRaw({ t: "z" });
+    this.sendRaw({ t: "kr" });
+    this.sendRaw({ t: "mb", c: "BTN_LEFT", v: 0 });
+    this.sendRaw({ t: "mb", c: "BTN_RIGHT", v: 0 });
   }
 }

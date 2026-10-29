@@ -8,11 +8,6 @@ export const ACTION_ICON = `<svg viewBox="0 0 24 24" width="55%" height="55%" fi
 export const ACTION_EXIT_ICON = `<svg viewBox="0 0 24 24" width="55%" height="55%" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>`;
 
 export const SHAPE_ICONS = {
-  /* PlayStation geometric shapes (rendered as crisp vector SVGs) */
-  "▲": `<svg viewBox="0 0 24 24" width="56%" height="56%" fill="none" stroke="#2ed573" stroke-width="2.8" stroke-linejoin="round" aria-hidden="true"><polygon points="12,5 21,19 3,19"/></svg>`,
-  "●": `<svg viewBox="0 0 24 24" width="56%" height="56%" fill="none" stroke="#ff4757" stroke-width="2.8" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/></svg>`,
-  "✕": `<svg viewBox="0 0 24 24" width="56%" height="56%" fill="none" stroke="#1e90ff" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>`,
-  "■": `<svg viewBox="0 0 24 24" width="56%" height="56%" fill="none" stroke="#e056fd" stroke-width="2.8" stroke-linejoin="round" aria-hidden="true"><rect x="5.5" y="5.5" width="13" height="13" rx="2"/></svg>`,
   /* System / menu icons */
   "⌂": `<svg viewBox="0 0 24 24" width="55%" height="55%" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 4.5l8 7V20a1.5 1.5 0 0 1-1.5 1.5H5.5A1.5 1.5 0 0 1 4 20z"/><path d="M9.5 21.5v-4.5a2.5 2.5 0 0 1 5 0v4.5"/></svg>`,
   "−": `<svg viewBox="0 0 24 24" width="50%" height="50%" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>`,

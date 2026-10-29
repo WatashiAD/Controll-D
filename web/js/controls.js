@@ -118,14 +118,6 @@ class BaseControl {
       this.label.textContent = labelKey;
       this.label.hidden = !labelKey;
     }
-
-    const glyphMap = { "▲": "triangle", "●": "circle", "✕": "cross", "■": "square" };
-    if (glyphMap[labelKey]) {
-      this.el.classList.add("shape-btn");
-      this.el.dataset.glyph = glyphMap[labelKey];
-    } else {
-      delete this.el.dataset.glyph;
-    }
   }
 
   setActive(on) {
@@ -281,40 +273,6 @@ class DpadControl extends BaseControl {
   }
 }
 
-class TriggerControl extends BaseControl {
-  constructor(data, stage) {
-    super(data, stage);
-    this.el.classList.add("trigger");
-    this.fill = document.createElement("div");
-    this.fill.className = "fill";
-    this.el.appendChild(this.fill);
-    this.rect = null;
-  }
-
-  onPress(e) {
-    this.rect = this.el.getBoundingClientRect();
-    this._track(e);
-  }
-
-  onMove(e) {
-    this._track(e);
-  }
-
-  _track(e) {
-    const r = this.rect;
-    const v = clamp(1 - (e.clientY - r.top) / r.height, 0, 1);
-    this.fill.style.height = `${v * 100}%`;
-    this.setActive(v > 0.01);
-    this.stage.ctx.transport.sendAxis(this.data.map.code, v);
-  }
-
-  onRelease() {
-    this.fill.style.height = "0%";
-    this.setActive(false);
-    this.stage.ctx.transport.sendAxis(this.data.map.code, 0);
-  }
-}
-
 /* Local action button (e.g. fullscreen toggle): no gamepad traffic,
    fully customisable like any other control (move/resize/rename). */
 class ActionControl extends BaseControl {
@@ -354,148 +312,11 @@ class ActionControl extends BaseControl {
   }
 }
 
-class IslandControl extends BaseControl {
-  constructor(data, stage) {
-    super(data, stage);
-    this.el.classList.add("island");
-    const shapePath = data.shape === "flower" ? FLOWER_PATH : CLOVER_PATH;
-    this.islandSvg = createShapeSvg(shapePath, "island-svg");
-    this.face.appendChild(this.islandSvg);
-  }
-
-  applyLayout() {
-    super.applyLayout();
-    const shapePath = this.data.shape === "flower" ? FLOWER_PATH : CLOVER_PATH;
-    if (this.islandSvg) {
-      this.islandSvg.innerHTML = `<path d="${shapePath}"/>`;
-    }
-  }
-}
-
-class ClusterControl extends BaseControl {
-  constructor(data, stage) {
-    super(data, stage);
-    this.el.classList.add("cluster");
-
-    const shapePath = data.shape === "flower" ? FLOWER_PATH : CLOVER_PATH;
-    this.cloverSvg = createShapeSvg(shapePath, "face-clover");
-    this.face.appendChild(this.cloverSvg);
-
-    this.buttons = {};
-    const subDefs = [
-      { dir: "north", defaultCode: "BTN_WEST",  defaultLabel: "Y" },
-      { dir: "west",  defaultCode: "BTN_NORTH", defaultLabel: "X" },
-      { dir: "east",  defaultCode: "BTN_EAST",  defaultLabel: "B" },
-      { dir: "south", defaultCode: "BTN_SOUTH", defaultLabel: "A" },
-    ];
-
-    for (const def of subDefs) {
-      const bEl = document.createElement("div");
-      bEl.className = `cluster-btn ${def.dir}`;
-      const code = (this.data.map && this.data.map[def.dir]) || def.defaultCode;
-      const lbl = (this.data.labels && this.data.labels[def.dir]) || def.defaultLabel;
-      bEl.textContent = lbl;
-      this.el.appendChild(bEl);
-      this.buttons[def.dir] = { el: bEl, code };
-    }
-
-    this._activePointers = new Map();
-  }
-
-  applyLayout() {
-    super.applyLayout();
-    const shapePath = this.data.shape === "flower" ? FLOWER_PATH : CLOVER_PATH;
-    if (this.cloverSvg) {
-      this.cloverSvg.innerHTML = `<path d="${shapePath}"/>`;
-    }
-    for (const dir of ["north", "west", "east", "south"]) {
-      if (this.buttons[dir]) {
-        if (this.data.labels && this.data.labels[dir]) this.buttons[dir].el.textContent = this.data.labels[dir];
-        if (this.data.map && this.data.map[dir]) this.buttons[dir].code = this.data.map[dir];
-      }
-    }
-  }
-
-  _getDir(e) {
-    const r = this.el.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-    const dx = (e.clientX - cx) / (r.width / 2);
-    const dy = (e.clientY - cy) / (r.height / 2);
-    if (Math.hypot(dx, dy) < 0.12) return null;
-    return Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "east" : "west") : (dy > 0 ? "south" : "north");
-  }
-
-  _pressDir(pointerId, dir) {
-    const cur = this._activePointers.get(pointerId);
-    if (cur === dir) return;
-    if (cur) this._releasePointer(pointerId);
-    if (!dir || !this.buttons[dir]) return;
-    this._activePointers.set(pointerId, dir);
-    const b = this.buttons[dir];
-    b.el.classList.add("active");
-    this.stage.ctx.haptics.tap();
-    this.stage.ctx.transport.sendButton(b.code, 1);
-  }
-
-  _releasePointer(pointerId) {
-    const dir = this._activePointers.get(pointerId);
-    if (!dir) return;
-    this._activePointers.delete(pointerId);
-    const stillActive = Array.from(this._activePointers.values()).includes(dir);
-    if (!stillActive && this.buttons[dir]) {
-      this.buttons[dir].el.classList.remove("active");
-      this.stage.ctx.transport.sendButton(this.buttons[dir].code, 0);
-    }
-  }
-
-  _down(e) {
-    if (this.stage.editMode) return;
-    e.preventDefault();
-    try {
-      this.el.setPointerCapture(e.pointerId);
-    } catch {
-      /* ignore */
-    }
-    this.el.classList.add("active");
-    const dir = this._getDir(e);
-    if (dir) this._pressDir(e.pointerId, dir);
-  }
-
-  _move(e) {
-    if (this.stage.editMode) return;
-    if (!this._activePointers.has(e.pointerId)) return;
-    e.preventDefault();
-    const dir = this._getDir(e);
-    if (dir) this._pressDir(e.pointerId, dir);
-    else this._releasePointer(e.pointerId);
-  }
-
-  _up(e) {
-    if (this.stage.editMode) return;
-    e.preventDefault();
-    this._releasePointer(e.pointerId);
-    if (this._activePointers.size === 0) {
-      this.el.classList.remove("active");
-    }
-  }
-
-  _forceRelease() {
-    for (const pid of Array.from(this._activePointers.keys())) {
-      this._releasePointer(pid);
-    }
-    this.el.classList.remove("active");
-  }
-}
-
 const FACTORY = {
   button: ButtonControl,
   stick: StickControl,
   dpad: DpadControl,
-  trigger: TriggerControl,
   action: ActionControl,
-  island: IslandControl,
-  cluster: ClusterControl,
 };
 
 export class Stage {
@@ -571,13 +392,7 @@ export class Stage {
     for (const c of this.controls) {
       const m = c.data.map;
       if (c.data.type === "button") buttons.add(m.code);
-      else if (c.data.type === "cluster" && m) {
-        if (m.north) buttons.add(m.north);
-        if (m.west) buttons.add(m.west);
-        if (m.east) buttons.add(m.east);
-        if (m.south) buttons.add(m.south);
-      } else if (c.data.type === "trigger") axes.add(m.code);
-      else if (c.data.type === "action" || c.data.type === "island") { /* local/visual */ }
+      else if (c.data.type === "action") { /* local/visual */ }
       else if (m) {
         if (m.x) axes.add(m.x);
         if (m.y) axes.add(m.y);
@@ -602,8 +417,7 @@ export class Stage {
     } else if (type === "action") {
       data = { ...base, label: "⛶", size: 10, aspect: 1, map: { action: "fullscreen" } };
     } else {
-      const code = used.axes.has("ABS_Z") ? "ABS_RZ" : "ABS_Z";
-      data = { ...base, label: code === "ABS_Z" ? "LT" : "RT", size: 9, aspect: 3.2, map: { code } };
+      return null;
     }
     const Cls = FACTORY[type] || ButtonControl;
     const impl = new Cls(data, this);

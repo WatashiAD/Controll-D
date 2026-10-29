@@ -10,7 +10,9 @@
   "scripts": {
     "start": "node server/main.mjs",
     "dev": "node --watch server/main.mjs",
-    "update": "node server/update.mjs"
+    "update": "node server/update.mjs",
+    "check": "node tools/check-whitelists.mjs",
+    "test": "node --test test/*.test.mjs"
   },
   "keywords": [],
   "type": "commonjs",

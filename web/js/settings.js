@@ -6,7 +6,7 @@ const LEGACY_SETTINGS_KEY = "cotrll.v1.settings";
 const LEGACY_LAYOUTS_KEY = "cotrll.v1.layouts";
 
 export const DEFAULT_SETTINGS = {
-  buttonStyle: "xbox",   // "xbox" | "playstation" | "nintendo"
+  buttonStyle: "xbox",   // "xbox" | "nintendo"
   colorPrimary: "#655095",
   colorSecondary: "#d0bcff",
   defaultShape: "cookie",// "cookie" | "squircle" | "circle" | "pill"
@@ -17,9 +17,11 @@ export const DEFAULT_SETTINGS = {
   showRtt: true,
   deadzone: 10,          // global deadzone percent
   autoFullscreen: true,  // re-enter fullscreen on every tap
-  layoutName: "default", // default layout
+  layoutName: "xbox",    // default layout
   snapEnabled: true,     // magnetic alignment snapping
   snapGridStep: 2.5,     // grid snap increment
+  pointerSpeed: 100,     // trackpad cursor gain, percent
+  naturalScroll: true,   // trackpad scroll direction
 };
 
 function readJSON(key, fallback) {
@@ -48,9 +50,15 @@ export function loadSettings() {
   }
   const res = { ...DEFAULT_SETTINGS, ...(stored && typeof stored === "object" ? stored : {}) };
   if (!res.buttonStyle) res.buttonStyle = DEFAULT_SETTINGS.buttonStyle;
+  if (res.buttonStyle === "playstation") res.buttonStyle = "xbox"; // removed style
+  if (!Number.isFinite(Number(res.pointerSpeed))) res.pointerSpeed = DEFAULT_SETTINGS.pointerSpeed;
+  res.pointerSpeed = Math.max(40, Math.min(300, Math.round(Number(res.pointerSpeed))));
+  if (typeof res.naturalScroll !== "boolean") res.naturalScroll = DEFAULT_SETTINGS.naturalScroll;
   if (!res.colorPrimary) res.colorPrimary = DEFAULT_SETTINGS.colorPrimary;
   if (!res.colorSecondary) res.colorSecondary = DEFAULT_SETTINGS.colorSecondary;
-  if (!res.layoutName) res.layoutName = DEFAULT_SETTINGS.layoutName;
+  if (!res.layoutName || res.layoutName === "default" || res.layoutName === "expressive") {
+    res.layoutName = DEFAULT_SETTINGS.layoutName;
+  }
   return res;
 }
 

@@ -1,0 +1,353 @@
+/* HUD mode tabs, media toggles, keyboard / trackpad overlays, camera PiP. */
+
+/* ------------------------------------------------------------ HUD center */
+
+#mode-tabs {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc((var(--hud-h) - 31px) / 2);
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  pointer-events: auto;
+}
+
+#mode-tabs .seg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font: 600 12px/1 inherit;
+  letter-spacing: 0.2px;
+  color: var(--muted);
+  background: transparent;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+#mode-tabs .seg-btn.active {
+  color: var(--bg, #111);
+  background: var(--accent);
+}
+
+#mode-tabs.locked {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.hud-media {
+  position: absolute;
+  right: 96px;
+  top: calc((var(--hud-h) - 30px) / 2);
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.hud-act {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.1));
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.hud-act[aria-pressed="true"] {
+  color: var(--bg, #111);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Live level ring (mic) — driven by --vu (0..1) from media.js */
+#btn-mic::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: calc(var(--vu, 0) * 0.9);
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------- overlays */
+
+.overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--hud-h) + env(safe-area-inset-top));
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg, #121216);
+  z-index: 30;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#kb-overlay { touch-action: manipulation; }
+
+/* -------------------------------------------------------------- keyboard */
+
+.kb-rows {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  padding: clamp(10px, 4vh, 28px) clamp(12px, 5vw, 56px);
+}
+
+.kb-native-card {
+  width: min(680px, 100%);
+  display: grid;
+  gap: 12px;
+  padding: clamp(14px, 3vw, 22px);
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.09));
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--panel-solid, #333) 78%, transparent);
+  box-shadow: 0 16px 46px rgba(0, 0, 0, 0.18);
+}
+
+.kb-native-label {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--on-surface, #e6e0e9);
+}
+
+.kb-native-label > span:last-child {
+  display: grid;
+  gap: 2px;
+}
+
+.kb-native-label strong {
+  font-size: 15px;
+  letter-spacing: 0.15px;
+}
+
+.kb-native-label small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.kb-native-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+#kb-native-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 58px;
+  max-height: 58px;
+  resize: none;
+  padding: 17px 18px;
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.12));
+  border-radius: 16px;
+  outline: none;
+  background: rgba(0, 0, 0, 0.16);
+  color: var(--on-surface, #e6e0e9);
+  caret-color: var(--accent);
+  font-family: inherit;
+  font-size: 16px; /* prevents iOS focus zoom */
+  font-weight: 500;
+  line-height: 1.4;
+  touch-action: manipulation;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+#kb-native-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+#kb-native-input::placeholder {
+  color: var(--muted);
+  opacity: 0.9;
+}
+
+.kb-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  min-width: 50px;
+  flex: 0 0 auto;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.08));
+  background: var(--panel, rgba(45, 45, 45, 0.9));
+  color: var(--on-surface, #e6e0e9);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.kb-key:active,
+.kb-mod.on {
+  background: var(--accent);
+  color: var(--bg, #111);
+  border-color: var(--accent);
+}
+
+.kb-nav {
+  display: flex;
+  justify-content: flex-start;
+  gap: 6px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding: 8px clamp(8px, 3vw, 40px) calc(10px + env(safe-area-inset-bottom));
+}
+
+.kb-nav::-webkit-scrollbar { display: none; }
+
+.kb-nav-divider {
+  width: 1px;
+  height: 28px;
+  margin: 6px 2px;
+  flex: 0 0 1px;
+  background: var(--border-soft, rgba(255, 255, 255, 0.12));
+}
+
+/* -------------------------------------------------------------- trackpad */
+
+#tp-surface {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.03), transparent 62%),
+    var(--bg, #121216);
+  cursor: none;
+}
+
+#tp-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 74px;
+  height: 74px;
+  margin: -37px 0 0 -37px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 68%);
+  opacity: 0;
+  transition: opacity 120ms ease;
+  will-change: transform;
+  pointer-events: none;
+}
+
+#tp-cursor.active {
+  opacity: 0.95;
+}
+
+.tp-hint {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--panel-solid, #333);
+  color: var(--muted);
+  font-size: 12.5px;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.tp-hint.show {
+  opacity: 1;
+}
+
+.tp-bar {
+  display: flex;
+  gap: 8px;
+  padding: 10px clamp(12px, 6vw, 80px) calc(12px + env(safe-area-inset-bottom));
+}
+
+.tp-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 46px;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.08));
+  background: var(--panel, rgba(45, 45, 45, 0.9));
+  color: var(--muted);
+  font: 600 13px/1 inherit;
+}
+
+.tp-btn:active {
+  background: var(--accent);
+  color: var(--bg, #111);
+  border-color: var(--accent);
+}
+
+/* -------------------------------------------------------------- cam PiP */
+
+#cam-pip {
+  position: absolute;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  width: 148px;
+  aspect-ratio: 16 / 10;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.12));
+  background: #000;
+  z-index: 40;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+}
+
+#cam-pip video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* mirror preview, webcam convention */
+}
+
+#pip-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+}
+
+/* narrow screens: compact HUD center */
+@media (max-width: 640px) {
+  #mode-tabs .seg-btn { padding: 5px 9px; font-size: 11px; }
+  .hud-media { right: 84px; }
+}

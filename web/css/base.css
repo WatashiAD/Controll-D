@@ -23,6 +23,19 @@ button {
   border: none;
   color: inherit;
   background: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus,
+button:active,
+button:focus-visible {
+  outline: none !important;
+}
+
+button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
 }
 
 input, select {
@@ -42,7 +55,7 @@ input:focus, select:focus {
 
 input[type="range"] { accent-color: var(--accent); }
 
-button:focus-visible, input:focus-visible, select:focus-visible {
+input:focus-visible, select:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
@@ -159,6 +172,136 @@ md-dialog {
   --md-sys-color-surface-container-high: var(--panel-solid, #26242c);
   --md-sys-color-on-surface: var(--text, #e6e0e9);
   --md-sys-color-primary: var(--accent, #d0bcff);
+  --md-dialog-headline-font: 'Roboto', sans-serif;
+  --md-dialog-supporting-text-font: 'Roboto', sans-serif;
+  --md-ref-typeface-plain: 'Roboto', sans-serif;
+  --md-ref-typeface-brand: 'Roboto', sans-serif;
+  font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Force Roboto font across all settings panel elements */
+#settings-modal,
+#settings-modal *,
+#skin-guide-dialog,
+#skin-guide-dialog * {
+  font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+/* Disable Material 3 Web focus ring on all interactive components */
+:root {
+  --md-focus-ring-width: 0px;
+  --md-focus-ring-active-width: 0px;
+  --md-focus-ring-color: transparent;
+}
+
+md-filled-button,
+md-outlined-button,
+md-text-button,
+md-filled-tonal-button,
+md-icon-button,
+md-primary-tab,
+md-switch,
+md-slider,
+md-outlined-select {
+  --md-focus-ring-width: 0 !important;
+  --md-focus-ring-active-width: 0 !important;
+  --md-focus-ring-color: transparent !important;
+  outline: none !important;
+}
+
+md-focus-ring {
+  display: none !important;
+}
+
+/* ---------------- Preset / Skinning Guide Dialog ---------------- */
+
+#skin-guide-dialog {
+  --md-dialog-supporting-text-color: #ffffff;
+}
+
+#skin-guide-dialog [slot="headline"] {
+  color: #ffffff !important;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+#skin-guide-content {
+  color: #ffffff !important;
+  max-height: calc(85vh - 140px);
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.skinning-guide,
+.skinning-guide * {
+  color: #ffffff !important;
+}
+
+.skinning-guide h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #ffffff !important;
+}
+
+.skinning-guide h5 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 18px 0 8px 0;
+  color: #ffffff !important;
+}
+
+.skinning-guide p {
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin: 8px 0;
+  color: #ffffff !important;
+}
+
+.skinning-guide ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.skinning-guide li {
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 6px 0;
+  color: #ffffff !important;
+}
+
+.skinning-guide strong {
+  font-weight: 600;
+  color: #ffffff !important;
+}
+
+.skinning-guide pre {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 10px 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.skinning-guide pre code {
+  color: #ffffff !important;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  background: none;
+  padding: 0;
+}
+
+.skinning-guide p code,
+.skinning-guide li code {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
 }
 
 [slot="headline"] {

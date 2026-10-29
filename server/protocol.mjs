@@ -1,9 +1,10 @@
 /* Message validation, whitelisting and rate limiting for the WS protocol. */
 
 import { AXES, BUTTONS } from "./gamepad.mjs";
+import { KEYS, MOUSE_BUTTON_NAMES } from "./keys.mjs";
 
 export const MAX_MESSAGE_BYTES = 4096;
-const VALID_TYPES = new Set(["m", "b", "a", "p", "z"]);
+const VALID_TYPES = new Set(["m", "b", "a", "p", "z", "k", "kr", "mr", "mb", "mw"]);
 
 export class RateLimiter {
   /* Token bucket, sized for gamepad event streams. */
@@ -29,6 +30,17 @@ function clampFloat(value, lo, hi, def = 0.0) {
     return def;
   }
   return Math.max(lo, Math.min(hi, value));
+}
+
+function clampInt(value, lo, hi, def = 0) {
+  if (typeof value === "boolean" || typeof value !== "number" || Number.isNaN(value)) {
+    return def;
+  }
+  return Math.max(lo, Math.min(hi, Math.trunc(value)));
+}
+
+function bit(value) {
+  return value ? 1 : 0;
 }
 
 function isNum(value) {
@@ -59,8 +71,7 @@ export function parseMessage(raw) {
   if (!VALID_TYPES.has(type)) return null;
   if (type === "b") {
     if (!(msg.c in BUTTONS)) return null;
-    if (typeof msg.v !== "number" || Number.isNaN(msg.v)) return null;
-    return { t: "b", c: msg.c, v: msg.v ? 1 : 0 };
+    return { t: "b", c: msg.c, v: bit(msg.v) };
   }
   if (type === "a") {
     if (!(msg.c in AXES)) return null;
@@ -76,7 +87,7 @@ export function parseMessage(raw) {
       if (kind === "b") {
         if (!(code in BUTTONS)) return null;
         if (!isNum(value)) return null;
-        out.push(["b", code, value ? 1 : 0]);
+        out.push(["b", code, bit(value)]);
       } else if (kind === "a") {
         if (!(code in AXES)) return null;
         out.push(["a", code, clampFloat(value, -1.0, 1.0)]);
@@ -85,6 +96,24 @@ export function parseMessage(raw) {
       }
     }
     return { t: "m", e: out };
+  }
+  /* --- virtual keyboard / trackpad --- */
+  if (type === "k") {
+    if (!KEYS[msg.c]) return null;
+    return { t: "k", c: msg.c, v: bit(msg.v) };
+  }
+  if (type === "kr") return { t: "kr" };
+  if (type === "mr") {
+    if (!isNum(msg.x) || !isNum(msg.y)) return null;
+    return { t: "mr", x: clampInt(msg.x, -1024, 1024), y: clampInt(msg.y, -1024, 1024) };
+  }
+  if (type === "mb") {
+    if (!MOUSE_BUTTON_NAMES.has(msg.c)) return null;
+    return { t: "mb", c: msg.c, v: bit(msg.v) };
+  }
+  if (type === "mw") {
+    if (!isNum(msg.x) || !isNum(msg.y)) return null;
+    return { t: "mw", x: clampInt(msg.x, -64, 64), y: clampInt(msg.y, -64, 64) };
   }
   if (type === "p") return { t: "p", ts: msg.ts };
   if (type === "z") return { t: "z" };

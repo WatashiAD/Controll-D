@@ -9,8 +9,11 @@ import { autoFullscreen, isFullscreen, toggleFullscreen } from "./screen.js";
 import { Stage } from "./controls.js";
 import { defaultLayout, sanitizeLayout, listLayouts, LAYOUT_VERSION, PRESET_TITLES, applyButtonStyleToLayout, BUTTON_STYLES } from "./layout.js";
 import { Editor } from "./editor.js";
-import { ColorPicker } from "./color-picker.js";
-import { BUILTIN_SKINS, applyStageBackground, exportCurrentSkin, parseSkinJSON, SKINNING_GUIDE_HTML } from "./skins.js";
+import { BUILTIN_SKINS, applyStageBackground, exportCurrentSkin, parseSkinJSON } from "./skins.js";
+import { KeyboardOverlay } from "./keyboard.js";
+import { TrackpadOverlay } from "./trackpad.js";
+import { MediaHub } from "./media.js";
+import { initModes } from "./modes.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -26,9 +29,19 @@ const stage = new Stage($("stage"), {
   settings: () => settings,
 });
 
+const keyboard = new KeyboardOverlay(transport, haptics);
+const trackpad = new TrackpadOverlay(transport, haptics, () => settings);
+const hub = new MediaHub({ banner });
+const modes = initModes({
+  stage,
+  keyboard,
+  trackpad,
+  isEditing: () => stage.editMode,
+});
+
 const app = {
   dirty: false,
-  layoutName: settings.layoutName || "default",
+  layoutName: settings.layoutName || "xbox",
   storeLayoutName(name) {
     settings.layoutName = name;
     saveSettings(settings);
@@ -66,8 +79,8 @@ function loadCurrentLayout() {
   /* Migrate once: pre-Switch layouts (older version) fall back to default. */
   const fresh = stored && stored.version === LAYOUT_VERSION ? stored : null;
   const layout = sanitizeLayout(fresh) || defaultLayout();
-  app.layoutName = fresh ? layout.name : (settings.layoutName || "default");
-  applyButtonStyleToLayout(layout, settings.buttonStyle || "nintendo");
+  app.layoutName = fresh ? layout.name : (settings.layoutName || "xbox");
+  applyButtonStyleToLayout(layout, settings.buttonStyle || "xbox");
   stage.load(layout);
 }
 loadCurrentLayout();
@@ -138,11 +151,19 @@ transport.addEventListener("ready", () => {
   haptics.success();
 });
 
-/* release keys when the tab hides / page unloads */
+/* release held input when the tab hides / page unloads; stop media too */
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden) transport.neutralize();
+  if (document.hidden) {
+    transport.neutralize();
+    keyboard.release();
+    trackpad.release();
+    hub.stopAll();
+  }
 });
-window.addEventListener("pagehide", () => transport.neutralize());
+window.addEventListener("pagehide", () => {
+  transport.neutralize();
+  hub.stopAll();
+});
 
 /* ---------------- editor ---------------- */
 
@@ -156,6 +177,7 @@ function syncEditBtn() {
 }
 
 function enterEditor() {
+  modes.forcePad(); // editing always happens on the pad stage
   stage.setEditMode(true);
   editor.enter();
   syncEditBtn();
@@ -217,7 +239,7 @@ function syncPresetSelect() {
   if (!presetSelect) return;
   const layouts = listLayouts();
   const names = Object.keys(layouts);
-  const order = ["expressive", "default", "playstation", "xbox", "retro"];
+  const order = ["xbox", "nintendo"];
   names.sort((a, b) => {
     const ia = order.indexOf(a);
     const ib = order.indexOf(b);
@@ -231,7 +253,7 @@ function syncPresetSelect() {
       const title = (PRESET_TITLES && PRESET_TITLES[n]) || n;
       return `<md-select-option value="${n}"><div slot="headline">${title}</div></md-select-option>`;
     }).join("");
-  presetSelect.value = app.layoutName || "expressive";
+  presetSelect.value = app.layoutName || "xbox";
 }
 
 if (presetSelect) {
@@ -241,7 +263,7 @@ if (presetSelect) {
     const layouts = listLayouts();
     const l = sanitizeLayout(layouts[chosen]);
     if (l) {
-      if (chosen === "xbox" || chosen === "playstation" || chosen === "nintendo") {
+      if (chosen === "xbox" || chosen === "nintendo") {
         settings.buttonStyle = chosen;
         if (buttonStyleSelect) buttonStyleSelect.value = chosen;
         saveSettings(settings);
@@ -293,28 +315,13 @@ if (settingsTabs) {
   });
 }
 
-/* custom in-app color picker */
-const cpRoot = $("custom-color-picker-root");
-if (cpRoot) {
-  new ColorPicker(cpRoot, {
-    initialPrimary: settings.colorPrimary || DEFAULT_PRIMARY,
-    initialSecondary: settings.colorSecondary || DEFAULT_SECONDARY,
-    onChange: ({ primary, secondary }) => {
-      settings.colorPrimary = primary;
-      settings.colorSecondary = secondary;
-      saveSettings(settings);
-      applyColors(primary, secondary);
-    },
-  });
-}
-
-/* UI Skins & Custom Background */
+/* UI Layout Presets & Custom Background */
 const skinSelect = $("settings-skin-select");
 if (skinSelect) {
   skinSelect.innerHTML =
     BUILTIN_SKINS.map((s) => `<md-select-option value="${s.id}"><div slot="headline">${s.name}</div></md-select-option>`).join("") +
     `<md-select-option value="custom"><div slot="headline">Custom</div></md-select-option>`;
-  skinSelect.value = settings.skinPreset || "expressive";
+  skinSelect.value = settings.skinPreset || "cyberpunk";
   skinSelect.addEventListener("change", () => {
     const chosen = skinSelect.value;
     const found = BUILTIN_SKINS.find((s) => s.id === chosen);
@@ -328,7 +335,7 @@ if (skinSelect) {
       applyActiveButtonStyle(found.buttonStyle);
       if (buttonStyleSelect) buttonStyleSelect.value = found.buttonStyle;
       saveSettings(settings);
-      banner(`Skin: ${found.name}`);
+      banner(`Preset: ${found.name}`);
     }
   });
 }
@@ -366,7 +373,7 @@ const exportBtn = $("btn-export-skin");
 if (exportBtn) {
   exportBtn.addEventListener("click", () => {
     exportCurrentSkin(settings, `controll-d-${settings.skinPreset || "skin"}`);
-    banner("Skin exported");
+    banner("Preset exported");
   });
 }
 
@@ -381,7 +388,7 @@ if (importBtn && importFileInput) {
     reader.onload = (e) => {
       const imported = parseSkinJSON(e.target.result);
       if (!imported) {
-        banner("Invalid skin JSON file");
+        banner("Invalid preset JSON file");
         return;
       }
       settings.skinPreset = "custom";
@@ -397,26 +404,9 @@ if (importBtn && importFileInput) {
       applyStageBackground(imported.background);
       applyActiveButtonStyle(imported.buttonStyle);
       if (buttonStyleSelect) buttonStyleSelect.value = imported.buttonStyle;
-      banner(`Skin loaded: ${imported.name}`);
+      banner(`Preset loaded: ${imported.name}`);
     };
     reader.readAsText(file);
-  });
-}
-
-const guideModal = $("skin-guide-dialog");
-const guideOpenBtn = $("btn-open-skin-guide");
-const guideCloseBtn = $("skin-guide-close");
-const guideContent = $("skin-guide-content");
-
-if (guideOpenBtn && guideModal) {
-  guideOpenBtn.addEventListener("click", () => {
-    if (guideContent) guideContent.innerHTML = SKINNING_GUIDE_HTML;
-    void guideModal.show();
-  });
-}
-if (guideCloseBtn && guideModal) {
-  guideCloseBtn.addEventListener("click", () => {
-    void guideModal.close();
   });
 }
 
@@ -485,6 +475,17 @@ deadzoneInput.addEventListener("input", () => {
   saveSettings(settings);
 });
 
+const pointerSpeedInput = $("opt-pointer-speed");
+if (pointerSpeedInput) {
+  pointerSpeedInput.value = settings.pointerSpeed;
+  pointerSpeedInput.addEventListener("input", () => {
+    settings.pointerSpeed = Math.max(40, Math.min(300, Math.round(Number(pointerSpeedInput.value))));
+    saveSettings(settings);
+  });
+}
+
+bindSwitch("opt-natural-scroll", "naturalScroll");
+
 $("conn-host").textContent = location.host;
 $("btn-disconnect").addEventListener("click", () => {
   void modal.close();
@@ -492,6 +493,43 @@ $("btn-disconnect").addEventListener("click", () => {
   transport.disconnect();
   setTimeout(() => transport.connect(), 400);
 });
+
+/* ---------------- mode tabs, mic/cam, camera PiP ---------------- */
+
+function syncMediaButtons() {
+  const mic = $("btn-mic");
+  const cam = $("btn-cam");
+  if (mic) mic.setAttribute("aria-pressed", hub.isLive("mic") ? "true" : "false");
+  if (cam) cam.setAttribute("aria-pressed", hub.isLive("cam") ? "true" : "false");
+}
+
+$("btn-mic")?.addEventListener("click", async () => {
+  await hub.toggle("mic");
+  syncMediaButtons();
+});
+$("btn-cam")?.addEventListener("click", async () => {
+  await hub.toggle("cam");
+  syncMediaButtons();
+});
+$("pip-close")?.addEventListener("click", async () => {
+  await hub.stop("cam");
+  syncMediaButtons();
+});
+
+/* Help card: camera viewer link + streaming capability summary */
+(async () => {
+  const info = await hub.probe();
+  const watchHint = $("cam-watch-hint");
+  if (watchHint) {
+    watchHint.textContent = `${location.protocol}//${location.host}/cam/watch`;
+  }
+  const status = $("media-status");
+  if (status) {
+    const f = hub.features || {};
+    const label = (v) => (v === "ok" ? "ready" : v === "relay" || v === "monitor" ? "beta" : "unavailable");
+    status.textContent = `Streaming — mic: ${label(f.mic)} · camera: ${label(f.cam)} · on ${info && info.platform ? info.platform : "PC"}`;
+  }
+})();
 
 /* ---------------- battery (best effort) ---------------- */
 
@@ -512,7 +550,7 @@ if (navigator.getBattery) {
 
 /* ---------------- font cache ---------------- */
 if ("caches" in window) {
-  const FONT_CSS_URL = "https://fonts.googleapis.com/css2?family=Biryani:wght@200;300;400;600;700;800;900&family=Palanquin+Dark:wght@400;500;600;700&family=Rubik+Mono+One&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap";
+  const FONT_CSS_URL = "https://fonts.googleapis.com/css2?family=Biryani:wght@200;300;400;600;700;800;900&family=Palanquin+Dark:wght@400;500;600;700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik+Mono+One&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap";
   caches.open("controll-d-fonts-v1").then((cache) => {
     cache.match(FONT_CSS_URL).then((cached) => {
       if (!cached) cache.add(FONT_CSS_URL).catch(() => {});
@@ -521,5 +559,4 @@ if ("caches" in window) {
 }
 
 /* debug/test hook */
-window.__controll = { stage, transport, settings, app };
-window.__cotrll = window.__controll;
+window.__controll = { stage, transport, settings, app, modes, keyboard, trackpad, hub };

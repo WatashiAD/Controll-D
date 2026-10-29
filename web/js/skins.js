@@ -1,35 +1,18 @@
-/* UI Skinning & Background Customization System for Controll-D.
+/* Preset & background customization for Controll-D.
  *
- * Allows users and community creators to import/export skins, set custom
- * background images/gradients, and share theme configurations.
+ * Built-in color presets, stage backgrounds, and import/export of
+ * shareable .controll-d-skin.json bundles.
  */
 
 import { applyColors, DEFAULT_PRIMARY, DEFAULT_SECONDARY } from "./theme.js";
-import { saveSettings } from "./settings.js";
 
 export const BUILTIN_SKINS = [
-  {
-    id: "expressive",
-    name: "Material Expressive",
-    author: "Controll-D",
-    colors: { primary: "#655095", secondary: "#d0bcff", bg: "#383838" },
-    buttonStyle: "xbox",
-    shape: "cookie",
-  },
   {
     id: "cyberpunk",
     name: "Cyberpunk Volt",
     author: "Controll-D",
     colors: { primary: "#2b2d42", secondary: "#fcee0a", bg: "#111216" },
     buttonStyle: "xbox",
-    shape: "cookie",
-  },
-  {
-    id: "playstation",
-    name: "PlayStation Blue",
-    author: "Sony",
-    colors: { primary: "#0b3954", secondary: "#48cae4", bg: "#1e2029" },
-    buttonStyle: "playstation",
     shape: "cookie",
   },
   {
@@ -124,7 +107,7 @@ export function parseSkinJSON(raw) {
       colorPrimary: colors.colorPrimary || colors.primary || DEFAULT_PRIMARY,
       colorSecondary: colors.colorSecondary || colors.secondary || DEFAULT_SECONDARY,
       background: data.background || { type: "default" },
-      buttonStyle: data.buttonStyle || "xbox",
+      buttonStyle: data.buttonStyle === "nintendo" ? "nintendo" : "xbox",
       shape: data.shape || "cookie",
     };
   } catch {
@@ -132,40 +115,3 @@ export function parseSkinJSON(raw) {
   }
 }
 
-/**
- * Community Skinning Instructions Guide HTML
- */
-export const SKINNING_GUIDE_HTML = `
-  <div class="skinning-guide">
-    <h4>🎨 Controll-D Skinning Guide</h4>
-    <p>Anyone can build custom skins for Controll-D! Skins customize colors, wallpaper backgrounds, button glyphs, and shapes.</p>
-
-    <h5>1. Skin File Format (.json)</h5>
-    <pre><code>{
-  "controllDSkin": 1,
-  "name": "My Custom Theme",
-  "theme": {
-    "colorPrimary": "#2b2d42",
-    "colorSecondary": "#fcee0a"
-  },
-  "background": {
-    "type": "image",
-    "value": "data:image/jpeg;base64,..."
-  },
-  "buttonStyle": "xbox",
-  "shape": "cookie"
-}</code></pre>
-
-    <h5>2. Supported Properties</h5>
-    <ul>
-      <li><strong>colorPrimary</strong>: Color of face buttons, D-pad, and borders.</li>
-      <li><strong>colorSecondary</strong>: Color of labels, analog stick knobs, and active glow.</li>
-      <li><strong>background</strong>: <code>"default"</code>, <code>"color"</code>, <code>"gradient"</code>, or <code>"image"</code> (base64 Data URL or direct URL).</li>
-      <li><strong>buttonStyle</strong>: <code>"xbox"</code> (A/B/X/Y), <code>"playstation"</code> (✕/●/■/▲), or <code>"nintendo"</code>.</li>
-      <li><strong>shape</strong>: <code>"cookie"</code> (4-sided cookie), <code>"squircle"</code>, <code>"circle"</code>, <code>"pill"</code>, etc.</li>
-    </ul>
-
-    <h5>3. Sharing with Community</h5>
-    <p>Export your skin using the button below and share your <code>.controll-d-skin.json</code> file with other players or submit it to the repository!</p>
-  </div>
-`;

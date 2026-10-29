@@ -185,7 +185,7 @@ export class Editor {
   refreshLayoutSelect(current) {
     const layouts = listLayouts();
     const names = Object.keys(layouts);
-    const order = ["expressive", "default", "playstation", "xbox", "retro"];
+    const order = ["xbox", "nintendo"];
     names.sort((a, b) => {
       const ia = order.indexOf(a);
       const ib = order.indexOf(b);
